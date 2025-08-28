@@ -71,54 +71,54 @@ export default function AddProduct() {
         {error && <div className="mb-4 text-red-600 text-sm">{error}</div>}
         <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Image</label>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'rgb(var(--muted))' }}>Image</label>
             <input type="file" accept="image/*" onChange={(e)=>setImageFile(e.target.files?.[0] || null)} className="w-full border rounded-md px-3 py-2" required />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'rgb(var(--muted))' }}>Name</label>
             <input value={form.name} onChange={(e)=>setForm({...form, name:e.target.value})} className="w-full border rounded-md px-3 py-2" required />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'rgb(var(--muted))' }}>Category</label>
             <input value={form.category} onChange={(e)=>setForm({...form, category:e.target.value})} className="w-full border rounded-md px-3 py-2" required />
           </div>
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'rgb(var(--muted))' }}>Address</label>
             <input value={form.address} onChange={(e)=>setForm({...form, address:e.target.value})} className="w-full border rounded-md px-3 py-2" required />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Logistics</label>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'rgb(var(--muted))' }}>Logistics</label>
             <select value={form.logistics} onChange={(e)=>setForm({...form, logistics:e.target.value})} className="w-full border rounded-md px-3 py-2">
               <option value="self-pickup">Self Pickup</option>
               <option value="home-delivery">Home Delivery</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">UPI ID</label>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'rgb(var(--muted))' }}>UPI ID</label>
             <input value={form.upiId} onChange={(e)=>setForm({...form, upiId:e.target.value})} className="w-full border rounded-md px-3 py-2" required />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'rgb(var(--muted))' }}>Phone Number</label>
             <input value={form.phone} onChange={(e)=>setForm({...form, phone:e.target.value})} className="w-full border rounded-md px-3 py-2" required />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'rgb(var(--muted))' }}>Quantity</label>
             <input type="number" min="1" value={form.quantity} onChange={(e)=>setForm({...form, quantity:e.target.value})} className="w-full border rounded-md px-3 py-2" required />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'rgb(var(--muted))' }}>Price</label>
             <input type="number" min="0" value={form.price} onChange={(e)=>setForm({...form, price:e.target.value})} className="w-full border rounded-md px-3 py-2" required />
           </div>
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'rgb(var(--muted))' }}>Description</label>
             <textarea value={form.description} onChange={(e)=>setForm({...form, description:e.target.value})} className="w-full border rounded-md px-3 py-2" rows={4} required />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Latitude (optional)</label>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'rgb(var(--muted))' }}>Latitude (optional)</label>
             <input value={form.lat} onChange={(e)=>setForm({...form, lat:e.target.value})} className="w-full border rounded-md px-3 py-2" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Longitude (optional)</label>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'rgb(var(--muted))' }}>Longitude (optional)</label>
             <input value={form.lng} onChange={(e)=>setForm({...form, lng:e.target.value})} className="w-full border rounded-md px-3 py-2" />
           </div>
           <div className="md:col-span-2">

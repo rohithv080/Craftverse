@@ -20,6 +20,8 @@
   body { @apply min-h-screen; }
   a { color: rgb(var(--primary)); }
   a:hover { @apply underline; }
+  input, select, textarea { color: rgb(var(--text)); background-color: rgb(var(--card)); border-color: rgb(var(--border)); }
+  input::placeholder, textarea::placeholder { color: rgb(var(--muted)); }
 }
 
 @layer components {

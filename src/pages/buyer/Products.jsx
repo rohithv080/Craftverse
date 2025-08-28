@@ -19,7 +19,6 @@ function distanceKm(a, b) {
 export default function Products() {
   const [products, setProducts] = useState([])
   const [center, setCenter] = useState(null)
-  const [radiusKm, setRadiusKm] = useState(20)
   const [active, setActive] = useState(null)
 
   useEffect(() => {
@@ -39,9 +38,9 @@ export default function Products() {
   }, [])
 
   const visible = useMemo(() => {
-    if (!center) return products
-    return products.filter(p => distanceKm(center, p.location) <= radiusKm)
-  }, [products, center, radiusKm])
+    // Show all products (radius removed)
+    return products
+  }, [products])
 
   return (
     <div className="min-h-screen p-6">
@@ -49,11 +48,6 @@ export default function Products() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold" style={{ color: 'rgb(var(--primary))' }}>Products Nearby</h1>
           <div className="flex items-center gap-2">
-            <span className="text-sm" style={{ color: 'rgb(var(--muted))' }}>Radius</span>
-            <select value={radiusKm} onChange={(e)=>setRadiusKm(Number(e.target.value))} className="border rounded-md px-2 py-1">
-              <option value={10}>10 km</option>
-              <option value={20}>20 km</option>
-            </select>
             <Link to="/buyer/cart" className="ml-4 btn-primary px-4 py-2">Cart</Link>
           </div>
         </div>
@@ -72,7 +66,7 @@ export default function Products() {
             </div>
           ))}
           {visible.length === 0 && (
-            <div className="col-span-full" style={{ color: 'rgb(var(--muted))' }}>No products within selected radius.</div>
+            <div className="col-span-full" style={{ color: 'rgb(var(--muted))' }}>No products found.</div>
           )}
         </div>
         {active && <ProductModal product={active} onClose={()=>setActive(null)} />}
