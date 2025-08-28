@@ -3,14 +3,53 @@
 @tailwind utilities;
 
 @layer base {
-  html { @apply bg-white text-gray-900; }
+  :root {
+    /* default to sand (brown) */
+    --bg: 250 247 242; /* warm ivory */
+    --card: 255 252 247; /* off-white card */
+    --text: 41 37 36; /* stone-800 */
+    --muted: 87 83 78; /* stone-600 */
+    --primary: 180 83 9; /* amber-700 (brown) */
+    --primary-contrast: 255 255 255;
+    --primary-soft: 254 243 199; /* amber-100 */
+    --border: 231 229 228; /* stone-200 */
+    --shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  }
+
+  html { @apply bg-[rgb(var(--bg))] text-[rgb(var(--text))]; }
   body { @apply min-h-screen; }
-  a { @apply text-purple-700; }
+  a { color: rgb(var(--primary)); }
   a:hover { @apply underline; }
 }
 
 @layer components {
-  .btn-primary { @apply bg-purple-600 hover:bg-purple-700 text-white rounded-md px-4 py-2 font-medium; }
-  .btn-secondary { @apply bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-md px-4 py-2 font-medium; }
-  .card { @apply border rounded-xl bg-white shadow-sm; }
+  .btn-primary { @apply rounded-md px-4 py-2 font-medium; background-color: rgb(var(--primary)); color: rgb(var(--primary-contrast)); }
+  .btn-primary:hover { filter: brightness(0.95); }
+  .btn-secondary { @apply rounded-md px-4 py-2 font-medium; background-color: rgb(var(--primary-soft)); color: rgb(var(--primary)); }
+  .btn-secondary:hover { filter: brightness(0.97); }
+  .card { @apply rounded-xl shadow-sm; background-color: rgb(var(--card)); border: 1px solid rgb(var(--border)); }
+}
+
+/* sand (light brown) */
+[data-theme="sand"] {
+  --bg: 250 247 242; /* warm ivory */
+  --card: 255 252 247; /* off-white card */
+  --text: 41 37 36; /* stone-800 */
+  --muted: 87 83 78; /* stone-600 */
+  --primary: 180 83 9; /* amber-700 */
+  --primary-contrast: 255 255 255;
+  --primary-soft: 254 243 199; /* amber-100 */
+  --border: 231 229 228; /* stone-200 */
+}
+
+/* cocoa (dark brown) */
+[data-theme="cocoa"] {
+  --bg: 24 20 15; /* deep brown */
+  --card: 36 28 21;
+  --text: 243 244 246; /* gray-100 */
+  --muted: 209 213 219; /* gray-300 */
+  --primary: 124 45 18; /* orange-900 (brownish) */
+  --primary-contrast: 255 255 255;
+  --primary-soft: 68 36 20; /* darker brown soft */
+  --border: 55 48 40; /* stone-700 */
 }

@@ -31,9 +31,9 @@ export default function Checkout() {
   }
 
   return (
-    <div className="min-h-screen bg-white p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold text-purple-700 mb-4">Checkout</h1>
+        <h1 className="text-2xl font-bold mb-4" style={{ color: 'rgb(var(--primary))' }}>Checkout</h1>
         <div className="space-y-3 mb-4">
           {items.map(i => (
             <div key={i.id} className="flex items-center justify-between border rounded p-3">
@@ -46,7 +46,7 @@ export default function Checkout() {
           <div>Total</div>
           <div>₹{total}</div>
         </div>
-        <button disabled={loading} onClick={handlePay} className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-md py-2 font-medium disabled:opacity-60">{loading ? 'Processing...' : 'Pay Now'}</button>
+        <button disabled={loading} onClick={handlePay} className="w-full btn-primary rounded-md py-2 font-medium disabled:opacity-60">{loading ? 'Processing...' : 'Pay Now'}</button>
       </div>
     </div>
   )
