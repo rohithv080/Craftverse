@@ -17,8 +17,8 @@ import { ThemeProvider } from './contexts/ThemeContext.jsx'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
-  if (loading) return <div className="min-h-screen flex items-center justify-center" style={{ color: 'rgb(var(--primary))' }}>Loading...</div>
-  return user ? children : <Navigate to="/login" replace />
+  if (loading) return <div className="min-h-screen flex items-center justify-center text-orange-500">Loading...</div>
+  return user ? children : <Navigate to="/auth/login" replace />
 }
 
 function App() {
@@ -30,10 +30,18 @@ function App() {
         <BrowserRouter>
           <div className="min-h-screen">
             <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
+              {/* Default landing page - redirect to login */}
+              <Route path="/" element={<Navigate to="/auth/login" replace />} />
+              
+              {/* Auth routes - no layout */}
+              <Route path="/auth/login" element={<Login />} />
+              <Route path="/auth/signup" element={<Signup />} />
+              
+              {/* Role selection - no layout */}
+              <Route path="/role-select" element={<ProtectedRoute><RoleSelect /></ProtectedRoute>} />
+              
+              {/* Protected routes with layout */}
               <Route element={<Layout />}>
-                <Route path="/" element={<ProtectedRoute><RoleSelect /></ProtectedRoute>} />
                 <Route path="/seller/add" element={<ProtectedRoute><AddProduct /></ProtectedRoute>} />
                 <Route path="/seller/dashboard" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>} />
                 <Route path="/buyer/products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
@@ -41,7 +49,9 @@ function App() {
                 <Route path="/buyer/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
                 <Route path="/buyer/order-confirmation" element={<ProtectedRoute><OrderConfirmation /></ProtectedRoute>} />
               </Route>
-              <Route path="*" element={<Navigate to="/" replace />} />
+              
+              {/* Fallback route */}
+              <Route path="*" element={<Navigate to="/auth/login" replace />} />
             </Routes>
           </div>
         </BrowserRouter>
