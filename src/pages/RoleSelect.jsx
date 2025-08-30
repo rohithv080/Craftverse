@@ -68,32 +68,34 @@ export default function RoleSelect() {
         {/* Role Selection Cards */}
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {/* Seller Card */}
-          <div className="group">
+          <div className="group flex">
             <button 
               onClick={() => handleRoleSelect('seller')}
               disabled={roleLoading}
-              className="w-full text-left block"
+              className="w-full text-left"
             >
-              <div className={`bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 h-full border-2 ${
+              <div className={`bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 h-full flex flex-col border-2 ${
                 selectedRole === 'seller' 
                   ? 'border-orange-400 bg-orange-50' 
                   : 'border-transparent hover:border-orange-200'
               } ${roleLoading ? 'opacity-75 cursor-not-allowed' : ''}`}>
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-orange-100 rounded-full mx-auto mb-6 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    {roleLoading && selectedRole === 'seller' ? (
-                      <FaSpinner className="text-3xl text-orange-500 animate-spin" />
-                    ) : (
-                      <FaUserTie className="text-3xl text-orange-500" />
-                    )}
+                <div className="flex flex-col flex-grow">
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-orange-100 rounded-full mx-auto mb-6 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      {roleLoading && selectedRole === 'seller' ? (
+                        <FaSpinner className="text-3xl text-orange-500 animate-spin" />
+                      ) : (
+                        <FaUserTie className="text-3xl text-orange-500" />
+                      )}
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">I'm a Seller</h2>
+                    <p className="text-gray-600 mb-6 leading-relaxed">
+                      Start selling your products locally. Manage inventory, track sales, and grow your business with our platform.
+                    </p>
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">I'm a Seller</h2>
-                  <p className="text-gray-600 mb-6 leading-relaxed">
-                    Start selling your products locally. Manage inventory, track sales, and grow your business with our platform.
-                  </p>
                   
                   {/* Features */}
-                  <div className="space-y-3 text-left">
+                  <div className="space-y-3 text-left mb-6">
                     <div className="flex items-center gap-3 text-sm text-gray-600">
                       <FaStore className="text-orange-500" />
                       <span>Create and manage product listings</span>
@@ -108,7 +110,7 @@ export default function RoleSelect() {
                     </div>
                   </div>
                   
-                  <div className="mt-6">
+                  <div className="mt-auto text-center">
                     <span className={`inline-block px-6 py-3 rounded-lg font-medium transition-colors ${
                       selectedRole === 'seller' && roleLoading
                         ? 'bg-orange-400 text-white'
@@ -123,32 +125,34 @@ export default function RoleSelect() {
           </div>
 
           {/* Buyer Card */}
-          <div className="group">
+          <div className="group flex">
             <button 
               onClick={() => handleRoleSelect('buyer')}
               disabled={roleLoading}
-              className="w-full text-left block"
+              className="w-full text-left"
             >
-              <div className={`bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 h-full border-2 ${
+              <div className={`bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 h-full flex flex-col border-2 ${
                 selectedRole === 'buyer' 
                   ? 'border-blue-400 bg-blue-50' 
                   : 'border-transparent hover:border-blue-200'
               } ${roleLoading ? 'opacity-75 cursor-not-allowed' : ''}`}>
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-blue-100 rounded-full mx-auto mb-6 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    {roleLoading && selectedRole === 'buyer' ? (
-                      <FaSpinner className="text-3xl text-blue-500 animate-spin" />
-                    ) : (
-                      <FaShoppingCart className="text-3xl text-blue-500" />
-                    )}
+                <div className="flex flex-col flex-grow">
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-blue-100 rounded-full mx-auto mb-6 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      {roleLoading && selectedRole === 'buyer' ? (
+                        <FaSpinner className="text-3xl text-blue-500 animate-spin" />
+                      ) : (
+                        <FaShoppingCart className="text-3xl text-blue-500" />
+                      )}
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">I'm a Buyer</h2>
+                    <p className="text-gray-600 mb-6 leading-relaxed">
+                      Discover amazing products from local sellers. Shop with convenience and support your community.
+                    </p>
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">I'm a Buyer</h2>
-                  <p className="text-gray-600 mb-6 leading-relaxed">
-                    Discover amazing products from local sellers. Shop with convenience and support your community.
-                  </p>
                   
                   {/* Features */}
-                  <div className="space-y-3 text-left">
+                  <div className="space-y-3 text-left mb-6">
                     <div className="flex items-center gap-3 text-sm text-gray-600">
                       <FaMapMarkerAlt className="text-blue-500" />
                       <span>Find products near you</span>
@@ -163,7 +167,7 @@ export default function RoleSelect() {
                     </div>
                   </div>
                   
-                  <div className="mt-6">
+                  <div className="mt-auto text-center">
                     <span className={`inline-block px-6 py-3 rounded-lg font-medium transition-colors ${
                       selectedRole === 'buyer' && roleLoading
                         ? 'bg-blue-400 text-white'
@@ -191,5 +195,3 @@ export default function RoleSelect() {
     </div>
   )
 }
-
-

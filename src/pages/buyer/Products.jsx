@@ -25,6 +25,7 @@ export default function Products() {
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState('relevance')
   const [priceRange, setPriceRange] = useState('all')
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'products'), (snap) => {
@@ -89,61 +90,75 @@ export default function Products() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section with Website Introduction */}
-      <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-brown-50 to-brown-70 text-white h-full">
         <div className="max-w-7xl mx-auto px-4 py-16">
           <div className="grid md:grid-cols-2 gap-8 items-center">
-            {/* Left: Text */}
-            <div className="text-left">
-              <h1 className="text-5xl font-bold mb-6">Welcome to KAITHIRAN</h1>
-              <p className="text-xl mb-8 max-w-3xl">
-                Your trusted local marketplace connecting buyers and sellers in your community. 
-                Discover amazing products from local businesses and support your local economy.
+            <div>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-black">
+                Welcome to <span className="text-orange-900">KAITHIRAN</span>
+              </h1>
+              <p className="text-black text-lg mb-6 opacity-90">
+                Your trusted local marketplace connecting buyers and sellers nearby. 
+                Discover curated products, support local businesses, and enjoy fast, reliable delivery.
               </p>
-
-              {/* Features */}
-              <div className="grid md:grid-cols-3 gap-8 mt-12">
-                <div className="text-left">
-                  <FaMapMarkerAlt className="text-4xl mb-4 text-orange-200" />
-                  <h3 className="text-lg font-semibold mb-2">Local Products</h3>
-                  <p className="text-orange-100">Find products from sellers in your area</p>
+              <div className="flex flex-wrap gap-4 mb-6">
+                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg">
+                  <FaTruck className="text-orange-900" />
+                  <span className="text-sm text-orange-900">Fast Delivery</span>
                 </div>
-                <div className="text-left">
-                  <FaTruck className="text-4xl mb-4 text-orange-200" />
-                  <h3 className="text-lg font-semibold mb-2">Fast Delivery</h3>
-                  <p className="text-orange-100">Quick local delivery and pickup options</p>
+                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg">
+                  <FaShieldAlt className="text-orange-900" />
+                  <span className="text-sm text-orange-900">Secure Payments</span>
                 </div>
-                <div className="text-left">
-                  <FaShieldAlt className="text-4xl mb-4 text-orange-200" />
-                  <h3 className="text-lg font-semibold mb-2">Trusted Platform</h3>
-                  <p className="text-orange-100">Secure transactions and verified sellers</p>
+                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg">
+                  <FaUsers className="text-orange-900" />
+                  <span className="text-sm text-orange-900">Local Sellers</span>
                 </div>
               </div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a href="#products" className="inline-flex items-center justify-center px-6 py-3 bg-orange-900 text-white font-medium rounded-lg shadow hover:bg-gray-100 transition">
+                  Shop Now
+                </a>
+                <button className="inline-flex items-center justify-center px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition">
+                  Learn More
+                </button>
+              </div>
             </div>
-
-            {/* Right: Image */}
-            <div className="flex items-center justify-center">
-              <img src={heroImg} alt="Marketplace" className="w-full max-w-md rounded-lg shadow-lg object-cover" />
+            <div className="flex justify-center">
+              <div className="relative w-full max-w-md">
+                <div className="absolute -inset-4 bg-white/20 rounded-2xl blur-xl"></div>
+                <div className="relative bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 shadow-2xl">
+                  <img src={heroImg} alt="Marketplace visual" className="w-full h-64 object-contain" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Search and Filters Section */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-900">Browse Products</h2>
+      <div id="products" className="sticky top-0 z-10 bg-white shadow-md">
+        <div className="max-w-7xl mx-auto px-4 py-5">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <h2 className="text-2xl font-bold text-gray-800">Browse Products</h2>
+            
             <div className="flex items-center gap-4">
-              <Link to="/buyer/cart" className="relative">
-                <FaShoppingCart className="text-2xl text-gray-700 hover:text-orange-500 transition-colors" />
-                <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+              <Link to="/buyer/cart" className="relative p-2 rounded-full hover:bg-gray-100 transition">
+                <FaShoppingCart className="text-xl text-gray-700" />
+                <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
               </Link>
+              <button 
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                className="md:hidden flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+              >
+                <FaFilter />
+                Filters
+              </button>
             </div>
           </div>
           
-          {/* Search and Filters */}
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="mt-4 flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
@@ -151,17 +166,17 @@ export default function Products() {
                 placeholder="Search for products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent shadow-sm"
               />
             </div>
             
-            <div className="flex gap-2">
+            <div className={`${isFilterOpen ? 'flex' : 'hidden'} md:flex gap-3 flex-col md:flex-row`}>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent shadow-sm"
               >
-                <option value="relevance">Sort by: Relevance</option>
+                <option value="relevance">Relevance</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
                 <option value="name">Name: A to Z</option>
@@ -170,7 +185,7 @@ export default function Products() {
               <select
                 value={priceRange}
                 onChange={(e) => setPriceRange(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent shadow-sm"
               >
                 <option value="all">All Prices</option>
                 <option value="0-500">Under ₹500</option>
@@ -186,56 +201,70 @@ export default function Products() {
       {/* Products Grid */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         {visible.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-gray-500 text-lg mb-2">No products found</div>
+          <div className="text-center py-16">
+            <div className="text-gray-500 text-xl mb-2">No products found</div>
             <div className="text-gray-400">Try adjusting your search or filters</div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {visible.map(p => (
-              <div key={p.id} className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group">
+              <div key={p.id} className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100">
                 {/* Product Image */}
-                <div className="relative">
+                <div className="relative overflow-hidden">
                   <img 
                     src={p.imageUrl} 
                     alt={p.name} 
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" 
+                    className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300" 
                   />
-                  <div className="absolute top-2 right-2">
+                  <div className="absolute top-3 right-3">
                     <button className="p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors">
-                      <FaHeart className="text-gray-400 hover:text-red-500" />
+                      <FaHeart className="text-gray-400 hover:text-red-500 transition-colors" />
                     </button>
                   </div>
                   {p.discount && (
-                    <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                    <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
                       {p.discount}% OFF
                     </div>
                   )}
+                  <div className="absolute bottom-3 left-3 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                    <FaMapMarkerAlt className="inline mr-1" /> Nearby
+                  </div>
                 </div>
                 
                 {/* Product Info */}
                 <div className="p-4">
-                  <div className="mb-2">
-                    <h3 className="font-medium text-gray-900 line-clamp-2 mb-1 group-hover:text-orange-600 transition-colors">
+                  <div className="mb-3">
+                    <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-orange-600 transition-colors">
                       {p.name}
                     </h3>
                     <div className="flex items-center gap-1 mb-2">
-                      <FaStar className="text-yellow-400 text-sm" />
-                      <span className="text-sm text-gray-600">{generateRating()}</span>
-                      <span className="text-xs text-gray-400">({generateReviews()})</span>
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <FaStar 
+                            key={i} 
+                            className={`text-sm ${
+                              i < Math.floor(parseFloat(generateRating())) 
+                                ? 'text-yellow-400' 
+                                : 'text-gray-300'
+                            }`} 
+                          />
+                        ))}
+                      </div>
+                      <span className="text-sm text-gray-600 ml-1">{generateRating()}</span>
+                      <span className="text-xs text-gray-400 ml-1">({generateReviews()})</span>
                     </div>
                   </div>
                   
                   {/* Price Section */}
-                  <div className="mb-3">
+                  <div className="mb-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-xl font-bold text-gray-900">₹{p.price}</span>
+                      <span className="text-xl font-bold text-gray-900">₹{p.price?.toLocaleString()}</span>
                       {p.originalPrice && (
-                        <span className="text-sm text-gray-500 line-through">₹{p.originalPrice}</span>
+                        <span className="text-sm text-gray-500 line-through">₹{p.originalPrice?.toLocaleString()}</span>
                       )}
                     </div>
                     {p.discount && (
-                      <span className="text-sm text-green-600 font-medium">{p.discount}% off</span>
+                      <span className="text-xs text-green-600 font-medium">You save ₹{(p.originalPrice - p.price)?.toLocaleString()}</span>
                     )}
                   </div>
                   
@@ -243,7 +272,7 @@ export default function Products() {
                   <div className="flex gap-2">
                     <button 
                       onClick={() => setActive(p)} 
-                      className="flex-1 flex items-center justify-center gap-2 py-2 px-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                      className="flex-1 flex items-center justify-center gap-2 py-2 px-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium"
                     >
                       <FaEye className="text-sm" />
                       View
@@ -251,7 +280,7 @@ export default function Products() {
                     <Link 
                       to={`/buyer/checkout`} 
                       state={{ product: p }} 
-                      className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
+                      className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium"
                     >
                       <FaShoppingCart className="text-sm" />
                       Buy Now
@@ -274,5 +303,3 @@ export default function Products() {
     </div>
   )
 }
-
-
