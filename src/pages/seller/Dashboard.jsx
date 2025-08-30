@@ -4,6 +4,32 @@ import { db } from '../../firebase/firebaseConfig'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { FaPlus, FaBox, FaChartLine, FaBoxes, FaEdit, FaTrash, FaEye } from 'react-icons/fa'
+// Charts
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import { Bar, Doughnut, Line } from 'react-chartjs-2'
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend
+)
 
 export default function SellerDashboard() {
   const { user } = useAuth()
@@ -91,6 +117,60 @@ export default function SellerDashboard() {
                     <div className="text-3xl font-bold text-gray-900">{stats.remaining}</div>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Charts */}
+            <div className="grid lg:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+                <h3 className="text-sm font-medium text-gray-700 mb-2">Sales by Product</h3>
+                <Bar
+                  data={{
+                    labels: products.map(p => p.name || p.id),
+                    datasets: [{
+                      label: 'Sales',
+                      data: products.map(p => p.sales || 0),
+                      backgroundColor: 'rgba(34,197,94,0.6)'
+                    }]
+                  }}
+                  options={{
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { ticks: { maxRotation: 45, minRotation: 0 } } }
+                  }}
+                />
+              </div>
+
+              <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+                <h3 className="text-sm font-medium text-gray-700 mb-2">Stock Distribution</h3>
+                <Doughnut
+                  data={{
+                    labels: products.map(p => p.name || p.id),
+                    datasets: [{
+                      label: 'Stock',
+                      data: products.map(p => (p.quantity || 0) - (p.sales || 0)),
+                      backgroundColor: products.map((_, i) => `hsl(${(i * 50) % 360} 70% 55%)`)
+                    }]
+                  }}
+                  options={{ responsive: true, plugins: { legend: { position: 'bottom' } } }}
+                />
+              </div>
+
+              <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+                <h3 className="text-sm font-medium text-gray-700 mb-2">Sales Trend</h3>
+                <Line
+                  data={{
+                    labels: products.map(p => p.name || p.id),
+                    datasets: [{
+                      label: 'Cumulative Sales',
+                      data: products.map((p, idx) => products.slice(0, idx + 1).reduce((s, it) => s + (it.sales || 0), 0)),
+                      borderColor: 'rgba(34,197,94,0.9)',
+                      backgroundColor: 'rgba(34,197,94,0.2)',
+                      tension: 0.3
+                    }]
+                  }}
+                  options={{ responsive: true, plugins: { legend: { display: false } } }}
+                />
               </div>
             </div>
 

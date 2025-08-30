@@ -3,6 +3,7 @@ import { collection, onSnapshot } from 'firebase/firestore'
 import { db } from '../../firebase/firebaseConfig'
 import { Link } from 'react-router-dom'
 import ProductModal from '../../components/ProductModal'
+import heroImg from '../../assets/react.svg'
 import { FaSearch, FaFilter, FaStar, FaShoppingCart, FaHeart, FaEye, FaMapMarkerAlt, FaTruck, FaShieldAlt, FaUsers } from 'react-icons/fa'
 
 function distanceKm(a, b) {
@@ -91,30 +92,38 @@ export default function Products() {
       {/* Hero Section with Website Introduction */}
       <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
         <div className="max-w-7xl mx-auto px-4 py-16">
-          <div className="text-center">
-            <h1 className="text-5xl font-bold mb-6">Welcome to KAITHIRAN</h1>
-            <p className="text-xl mb-8 max-w-3xl mx-auto">
-              Your trusted local marketplace connecting buyers and sellers in your community. 
-              Discover amazing products from local businesses and support your local economy.
-            </p>
-            
-            {/* Features */}
-            <div className="grid md:grid-cols-3 gap-8 mt-12">
-              <div className="text-center">
-                <FaMapMarkerAlt className="text-4xl mx-auto mb-4 text-orange-200" />
-                <h3 className="text-lg font-semibold mb-2">Local Products</h3>
-                <p className="text-orange-100">Find products from sellers in your area</p>
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            {/* Left: Text */}
+            <div className="text-left">
+              <h1 className="text-5xl font-bold mb-6">Welcome to KAITHIRAN</h1>
+              <p className="text-xl mb-8 max-w-3xl">
+                Your trusted local marketplace connecting buyers and sellers in your community. 
+                Discover amazing products from local businesses and support your local economy.
+              </p>
+
+              {/* Features */}
+              <div className="grid md:grid-cols-3 gap-8 mt-12">
+                <div className="text-left">
+                  <FaMapMarkerAlt className="text-4xl mb-4 text-orange-200" />
+                  <h3 className="text-lg font-semibold mb-2">Local Products</h3>
+                  <p className="text-orange-100">Find products from sellers in your area</p>
+                </div>
+                <div className="text-left">
+                  <FaTruck className="text-4xl mb-4 text-orange-200" />
+                  <h3 className="text-lg font-semibold mb-2">Fast Delivery</h3>
+                  <p className="text-orange-100">Quick local delivery and pickup options</p>
+                </div>
+                <div className="text-left">
+                  <FaShieldAlt className="text-4xl mb-4 text-orange-200" />
+                  <h3 className="text-lg font-semibold mb-2">Trusted Platform</h3>
+                  <p className="text-orange-100">Secure transactions and verified sellers</p>
+                </div>
               </div>
-              <div className="text-center">
-                <FaTruck className="text-4xl mx-auto mb-4 text-orange-200" />
-                <h3 className="text-lg font-semibold mb-2">Fast Delivery</h3>
-                <p className="text-orange-100">Quick local delivery and pickup options</p>
-              </div>
-              <div className="text-center">
-                <FaShieldAlt className="text-4xl mx-auto mb-4 text-orange-200" />
-                <h3 className="text-lg font-semibold mb-2">Trusted Platform</h3>
-                <p className="text-orange-100">Secure transactions and verified sellers</p>
-              </div>
+            </div>
+
+            {/* Right: Image */}
+            <div className="flex items-center justify-center">
+              <img src={heroImg} alt="Marketplace" className="w-full max-w-md rounded-lg shadow-lg object-cover" />
             </div>
           </div>
         </div>
