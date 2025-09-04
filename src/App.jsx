@@ -1,24 +1,34 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import './index.css'
-import Layout from './components/Layout.jsx'
-import Login from './pages/auth/Login.jsx'
-import Signup from './pages/auth/Signup.jsx'
-import RoleSelect from './pages/RoleSelect.jsx'
-import AddProduct from './pages/seller/AddProduct.jsx'
-import SellerDashboard from './pages/seller/Dashboard.jsx'
-import Products from './pages/buyer/Products.jsx'
-import Cart from './pages/buyer/Cart.jsx'
-import Checkout from './pages/buyer/Checkout.jsx'
-import OrderConfirmation from './pages/buyer/OrderConfirmation.jsx'
-import { AuthProvider, useAuth } from './contexts/AuthContext.jsx'
-import { CartProvider } from './contexts/CartContext.jsx'
-import { ToastProvider } from './contexts/ToastContext.jsx'
-import { ThemeProvider } from './contexts/ThemeContext.jsx'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import "./index.css";
+import Layout from "./components/Layout.jsx";
+import Login from "./pages/auth/Login.jsx";
+import Signup from "./pages/auth/Signup.jsx";
+import RoleSelect from "./pages/RoleSelect.jsx";
+import AddProduct from "./pages/seller/AddProduct.jsx";
+import SellerDashboard from "./pages/seller/Dashboard.jsx";
+import Products from "./pages/buyer/Products.jsx";
+import Cart from "./pages/buyer/Cart.jsx";
+import Checkout from "./pages/buyer/Checkout.jsx";
+import OrderConfirmation from "./pages/buyer/OrderConfirmation.jsx";
+
+import { AuthProvider, useAuth } from "./contexts/AuthContext.jsx";
+import { CartProvider } from "./contexts/CartContext.jsx";
+import { ToastProvider } from "./contexts/ToastContext.jsx";
+import { ThemeProvider } from "./contexts/ThemeContext.jsx";
+
+// ✅ Chatbot wrapper
+import Chatbot from "./components/chatbot.jsx";
 
 function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth()
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-orange-500">Loading...</div>
-  return user ? children : <Navigate to="/auth/login" replace />
+  const { user, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-orange-500">
+        Loading...
+      </div>
+    );
+  }
+  return user ? children : <Navigate to="/auth/login" replace />;
 }
 
 function App() {
@@ -26,40 +36,99 @@ function App() {
     <ThemeProvider>
       <AuthProvider>
         <CartProvider>
-        <ToastProvider>
-        <BrowserRouter>
-          <div className="min-h-screen">
-            <Routes>
-              {/* Default landing page - redirect to login */}
-              <Route path="/" element={<Navigate to="/auth/login" replace />} />
-              
-              {/* Auth routes - no layout */}
-              <Route path="/auth/login" element={<Login />} />
-              <Route path="/auth/signup" element={<Signup />} />
-              
-              {/* Role selection - no layout */}
-              <Route path="/role-select" element={<ProtectedRoute><RoleSelect /></ProtectedRoute>} />
-              
-              {/* Protected routes with layout */}
-              <Route element={<Layout />}>
-                <Route path="/seller/add" element={<ProtectedRoute><AddProduct /></ProtectedRoute>} />
-                <Route path="/seller/dashboard" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>} />
-                <Route path="/buyer/products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
-                <Route path="/buyer/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
-                <Route path="/buyer/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-                <Route path="/buyer/order-confirmation" element={<ProtectedRoute><OrderConfirmation /></ProtectedRoute>} />
-              </Route>
-              
-              {/* Fallback route */}
-              <Route path="*" element={<Navigate to="/auth/login" replace />} />
-            </Routes>
-          </div>
-        </BrowserRouter>
-        </ToastProvider>
+          <ToastProvider>
+            <BrowserRouter>
+              <div className="min-h-screen relative">
+                {/* App Routes */}
+                <Routes>
+                  {/* Default landing page - redirect to login */}
+                  <Route
+                    path="/"
+                    element={<Navigate to="/auth/login" replace />}
+                  />
+
+                  {/* Auth routes - no layout */}
+                  <Route path="/auth/login" element={<Login />} />
+                  <Route path="/auth/signup" element={<Signup />} />
+
+                  {/* Role selection - no layout */}
+                  <Route
+                    path="/role-select"
+                    element={
+                      <ProtectedRoute>
+                        <RoleSelect />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Protected routes with layout */}
+                  <Route element={<Layout />}>
+                    <Route
+                      path="/seller/add"
+                      element={
+                        <ProtectedRoute>
+                          <AddProduct />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/seller/dashboard"
+                      element={
+                        <ProtectedRoute>
+                          <SellerDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/buyer/products"
+                      element={
+                        <ProtectedRoute>
+                          <Products />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/buyer/cart"
+                      element={
+                        <ProtectedRoute>
+                          <Cart />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/buyer/checkout"
+                      element={
+                        <ProtectedRoute>
+                          <Checkout />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/buyer/order-confirmation"
+                      element={
+                        <ProtectedRoute>
+                          <OrderConfirmation />
+                        </ProtectedRoute>
+                      }
+                    />
+                  </Route>
+
+                  {/* Fallback route */}
+                  <Route
+                    path="*"
+                    element={<Navigate to="/auth/login" replace />}
+                  />
+                </Routes>
+
+                {/* ✅ Floating chatbot UI */}
+                <Chatbot />
+              </div>
+            </BrowserRouter>
+          </ToastProvider>
         </CartProvider>
       </AuthProvider>
     </ThemeProvider>
-  )
+  );  
 }
 
-export default App
+export default App;
