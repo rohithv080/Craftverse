@@ -1,26 +1,14 @@
-import { useLocation, Link } from 'react-router-dom'
-import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { FaTrash, FaMinus, FaPlus, FaArrowLeft, FaLock } from 'react-icons/fa'
+import { useCart } from "../../contexts/CartContext";
 
 export default function Cart() {
-  // Placeholder simple cart (in-memory for MVP). Consider moving to context/Firestore later.
-  const loc = useLocation()
-  const initialItem = loc.state?.product ? [{ ...loc.state.product, qty: 1 }] : []
-  const [items, setItems] = useState(initialItem)
+  const { items, updateQty, removeFromCart } = useCart()
 
   const total = items.reduce((s, it) => s + it.price * it.qty, 0)
   const subtotal = total
   const deliveryFee = items.length > 0 ? 40 : 0
   const finalTotal = subtotal + deliveryFee
-
-  function updateQty(id, qty) {
-    if (qty < 1) return
-    setItems(items.map(i => i.id === id ? { ...i, qty } : i))
-  }
-
-  function remove(id) {
-    setItems(items.filter(i => i.id !== id))
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -87,7 +75,7 @@ export default function Cart() {
                             <div className="flex items-center border border-gray-300 rounded-lg">
                               <button 
                                 onClick={() => updateQty(item.id, item.qty - 1)}
-                                className="p-2 hover:bg-gray-50 transition-colors"
+                                className="p-2 hover:bg-gray-100 transition-colors"
                                 disabled={item.qty <= 1}
                               >
                                 <FaMinus className="text-gray-500 text-xs" />
@@ -97,7 +85,7 @@ export default function Cart() {
                               </span>
                               <button 
                                 onClick={() => updateQty(item.id, item.qty + 1)}
-                                className="p-2 hover:bg-gray-50 transition-colors"
+                                className="p-2 hover:bg-gray-100 transition-colors"
                               >
                                 <FaPlus className="text-gray-500 text-xs" />
                               </button>
@@ -117,7 +105,7 @@ export default function Cart() {
                           </div>
                           
                           <button 
-                            onClick={() => remove(item.id)}
+                            onClick={() => removeFromCart(item.id)}
                             className="flex items-center gap-2 text-red-600 hover:text-red-700 transition-colors p-2 hover:bg-red-50 rounded-lg"
                           >
                             <FaTrash className="text-sm" />
@@ -183,5 +171,3 @@ export default function Cart() {
     </div>
   )
 }
-
-

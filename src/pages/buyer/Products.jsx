@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import ProductModal from '../../components/ProductModal'
 import heroImg from '../../assets/react.svg'
 import { FaSearch, FaFilter, FaStar, FaShoppingCart, FaHeart, FaEye, FaMapMarkerAlt, FaTruck, FaShieldAlt, FaUsers } from 'react-icons/fa'
+import { useCart } from "../../contexts/CartContext";
 
 function distanceKm(a, b) {
   if (!a || !b || a.lat == null || a.lng == null || b.lat == null || b.lng == null) return Infinity
@@ -19,6 +20,7 @@ function distanceKm(a, b) {
 }
 
 export default function Products() {
+  const { items, addToCart } = useCart()
   const [products, setProducts] = useState([])
   const [center, setCenter] = useState(null)
   const [active, setActive] = useState(null)
@@ -146,7 +148,9 @@ export default function Products() {
             <div className="flex items-center gap-4">
               <Link to="/buyer/cart" className="relative p-2 rounded-full hover:bg-gray-100 transition">
                 <FaShoppingCart className="text-xl text-gray-700" />
-                <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {items.length}
+                </span>
               </Link>
               <button 
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -217,7 +221,10 @@ export default function Products() {
                     className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300" 
                   />
                   <div className="absolute top-3 right-3">
-                    <button className="p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors">
+                    <button 
+                      onClick={() => addToCart(p, 1)}
+                      className="p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
+                    >
                       <FaHeart className="text-gray-400 hover:text-red-500 transition-colors" />
                     </button>
                   </div>
@@ -277,14 +284,13 @@ export default function Products() {
                       <FaEye className="text-sm" />
                       View
                     </button>
-                    <Link 
-                      to={`/buyer/checkout`} 
-                      state={{ product: p }} 
+                    <button 
+                      onClick={() => addToCart(p, 1)}
                       className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium"
                     >
                       <FaShoppingCart className="text-sm" />
-                      Buy Now
-                    </Link>
+                      Add to Cart
+                    </button>
                   </div>
                 </div>
               </div>
