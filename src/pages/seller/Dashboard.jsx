@@ -148,8 +148,8 @@ export default function SellerDashboard() {
                     labels: products.map(p => p.name || p.id),
                     datasets: [{
                       label: 'Stock',
-                      data: products.map(p => (p.quantity || 0) - (p.sales || 0)),
-                      backgroundColor: products.map((_, i) => `hsl(${(i * 50) % 360} 70% 55%)`)
+                      data: products.map(p => Math.max((p.quantity || 0) - (p.sales || 0), 0)),
+                      backgroundColor: products.map((_, i) => `hsl(${(i * 50) % 360}, 70%, 55%)`)
                     }]
                   }}
                   options={{ responsive: true, plugins: { legend: { position: 'bottom' } } }}
@@ -201,6 +201,7 @@ export default function SellerDashboard() {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sales</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                       </tr>
@@ -226,6 +227,9 @@ export default function SellerDashboard() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-900">{product.quantity || 0}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">{product.sales || 0}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -265,5 +269,3 @@ export default function SellerDashboard() {
     </div>
   )
 }
-
-

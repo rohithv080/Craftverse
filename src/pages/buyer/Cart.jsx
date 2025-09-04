@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { FaTrash, FaMinus, FaPlus, FaArrowLeft, FaLock } from 'react-icons/fa'
-import { useCart } from "../../contexts/CartContext";
+import { useCart } from '../../contexts/CartContext'
 
 export default function Cart() {
   const { items, updateQty, removeFromCart } = useCart()

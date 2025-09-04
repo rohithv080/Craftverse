@@ -1,16 +1,21 @@
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import emailjs from '@emailjs/browser'
 import { useState } from 'react'
+import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import { db } from '../../firebase/firebaseConfig'
+import { useCart } from '../../contexts/CartContext'
 import { FaArrowLeft, FaMapMarkerAlt, FaCreditCard, FaLock, FaShieldAlt, FaTruck } from 'react-icons/fa'
 
 export default function Checkout() {
   const location = useLocation()
   const navigate = useNavigate()
+  const { clearCart } = useCart()
   const product = location.state?.product
   const cart = location.state?.cart
   const items = cart || (product ? [{ ...product, qty: 1 }] : [])
   const total = items.reduce((s, i) => s + i.price * i.qty, 0)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const [deliveryAddress, setDeliveryAddress] = useState({
     fullName: '',
     phone: '',
@@ -22,28 +27,65 @@ export default function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState('cod')
 
   const subtotal = total
-  const deliveryFee = 40
+  const deliveryFee = items.length > 0 ? 40 : 0
   const finalTotal = subtotal + deliveryFee
 
   async function handlePay() {
     if (!deliveryAddress.fullName || !deliveryAddress.phone || !deliveryAddress.address || !deliveryAddress.city || !deliveryAddress.state || !deliveryAddress.pincode) {
-      alert('Please fill in all delivery address fields')
+      setError('Please fill in all delivery address fields')
       return
     }
 
     setLoading(true)
+    setError('')
     try {
-      // Placeholder payment success.
+      // Validate stock availability
+      for (const item of items) {
+        const productRef = doc(db, 'products', item.id)
+        const productSnap = await getDoc(productRef)
+        if (!productSnap.exists()) {
+          throw new Error(`Product ${item.name} does not exist`)
+        }
+        const productData = productSnap.data()
+        const availableStock = productData.quantity || 0
+        if (availableStock < item.qty) {
+          throw new Error(`Insufficient stock for ${item.name}. Available: ${availableStock}, Requested: ${item.qty}`)
+        }
+      }
+
+      // Update product sales and stock
+      for (const item of items) {
+        const productRef = doc(db, 'products', item.id)
+        const productSnap = await getDoc(productRef)
+        const productData = productSnap.data()
+        await updateDoc(productRef, {
+          sales: (productData.sales || 0) + item.qty,
+          quantity: Math.max((productData.quantity || 0) - item.qty, 0)
+        })
+      }
+
       // Send email via EmailJS (configure your serviceId/templateId/publicKey)
       try {
         await emailjs.send(
           'your_service_id',
           'your_template_id',
-          { total: finalTotal, items: items.map(i => `${i.name} x${i.qty}`).join(', ') },
+          {
+            total: finalTotal,
+            items: items.map(i => `${i.name} x${i.qty}`).join(', '),
+            fullName: deliveryAddress.fullName,
+            email: deliveryAddress.email || 'N/A'
+          },
           { publicKey: 'your_public_key' }
         )
-      } catch {}
+      } catch (emailError) {
+        console.warn('EmailJS failed:', emailError)
+      }
+
+      // Clear cart after successful order
+      clearCart()
       navigate('/buyer/order-confirmation', { state: { total: finalTotal, address: deliveryAddress } })
+    } catch (err) {
+      setError(err.message || 'An error occurred while processing your order')
     } finally {
       setLoading(false)
     }
@@ -61,6 +103,12 @@ export default function Checkout() {
           <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
           <p className="text-gray-600 mt-2">Complete your purchase</p>
         </div>
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg">
+            {error}
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Checkout Form */}
@@ -209,7 +257,7 @@ export default function Checkout() {
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Delivery Fee</span>
-                  <span>₹{deliveryFee}</span>
+                  <span>{deliveryFee > 0 ? `₹${deliveryFee}` : 'Free'}</span>
                 </div>
                 <div className="border-t border-gray-200 pt-3">
                   <div className="flex justify-between text-xl font-bold text-gray-900">
@@ -251,5 +299,3 @@ export default function Checkout() {
     </div>
   )
 }
-
-

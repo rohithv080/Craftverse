@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import ProductModal from '../../components/ProductModal'
 import heroImg from '../../assets/react.svg'
 import { FaSearch, FaFilter, FaStar, FaShoppingCart, FaHeart, FaEye, FaMapMarkerAlt, FaTruck, FaShieldAlt, FaUsers } from 'react-icons/fa'
-import { useCart } from "../../contexts/CartContext";
+import { useCart } from '../../contexts/CartContext'
 
 function distanceKm(a, b) {
   if (!a || !b || a.lat == null || a.lng == null || b.lat == null || b.lng == null) return Infinity
@@ -178,7 +178,7 @@ export default function Products() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent shadow-sm"
+                className="px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border Boot-transparent shadow-sm"
               >
                 <option value="relevance">Relevance</option>
                 <option value="price-low">Price: Low to High</option>
