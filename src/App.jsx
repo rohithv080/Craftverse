@@ -10,6 +10,9 @@ import Products from "./pages/buyer/Products.jsx";
 import Cart from "./pages/buyer/Cart.jsx";
 import Checkout from "./pages/buyer/Checkout.jsx";
 import OrderConfirmation from "./pages/buyer/OrderConfirmation.jsx";
+import Profile from "./pages/buyer/Profile.jsx";
+import OrderHistory from "./pages/buyer/OrderHistory.jsx";
+import Wishlist from "./pages/buyer/Wishlist.jsx";
 
 import { AuthProvider, useAuth } from "./contexts/AuthContext.jsx";
 import { CartProvider } from "./contexts/CartContext.jsx";
@@ -111,7 +114,31 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
-                  </Route>
+                    <Route
+                      path="/buyer/profile"
+                      element={
+                        <ProtectedRoute>
+                          <Profile />
+                        </ProtectedRoute>
+                      }
+                    />
+                  <Route
+                    path="/buyer/orders"
+                    element={
+                      <ProtectedRoute>
+                        <OrderHistory />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/buyer/wishlist"
+                    element={
+                      <ProtectedRoute>
+                        <Wishlist />
+                      </ProtectedRoute>
+                    }
+                  />
+                </Route>
 
                   {/* Fallback route */}
                   <Route

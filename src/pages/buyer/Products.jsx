@@ -20,7 +20,7 @@ function distanceKm(a, b) {
 }
 
 export default function Products() {
-  const { items, addToCart } = useCart()
+  const { items, addToCart, wishlist, addToWishlist, removeFromWishlist } = useCart()
   const [products, setProducts] = useState([])
   const [center, setCenter] = useState(null)
   const [active, setActive] = useState(null)
@@ -221,11 +221,24 @@ export default function Products() {
                     className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300" 
                   />
                   <div className="absolute top-3 right-3">
-                    <button 
-                      onClick={() => addToCart(p, 1)}
+                    <button
+                      onClick={() => {
+                        const isInWishlist = wishlist.find(item => item.id === p.id)
+                        if (isInWishlist) {
+                          removeFromWishlist(p.id)
+                        } else {
+                          addToWishlist(p)
+                        }
+                      }}
                       className="p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
                     >
-                      <FaHeart className="text-gray-400 hover:text-red-500 transition-colors" />
+                      <FaHeart
+                        className={`transition-colors ${
+                          wishlist.find(item => item.id === p.id)
+                            ? 'text-red-500'
+                            : 'text-gray-400 hover:text-red-500'
+                        }`}
+                      />
                     </button>
                   </div>
                   {p.discount && (
