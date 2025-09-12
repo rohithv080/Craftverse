@@ -64,21 +64,26 @@ export default function Checkout() {
         })
       }
 
-      // Send email via EmailJS (configure your serviceId/templateId/publicKey)
-      try {
-        await emailjs.send(
-          'your_service_id',
-          'your_template_id',
-          {
-            total: finalTotal,
-            items: items.map(i => `${i.name} x${i.qty}`).join(', '),
-            fullName: deliveryAddress.fullName,
-            email: deliveryAddress.email || 'N/A'
-          },
-          { publicKey: 'your_public_key' }
-        )
-      } catch (emailError) {
-        console.warn('EmailJS failed:', emailError)
+      // Send email via EmailJS if environment variables are configured
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      if (serviceId && templateId && publicKey) {
+        try {
+          await emailjs.send(
+            serviceId,
+            templateId,
+            {
+              total: finalTotal,
+              items: items.map(i => `${i.name} x${i.qty}`).join(', '),
+              fullName: deliveryAddress.fullName,
+              email: deliveryAddress.email || 'N/A'
+            },
+            { publicKey }
+          )
+        } catch (emailError) {
+          // Non-fatal
+        }
       }
 
       // Clear cart after successful order

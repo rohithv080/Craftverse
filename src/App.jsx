@@ -13,6 +13,7 @@ import OrderConfirmation from "./pages/buyer/OrderConfirmation.jsx";
 import Profile from "./pages/buyer/Profile.jsx";
 import OrderHistory from "./pages/buyer/OrderHistory.jsx";
 import Wishlist from "./pages/buyer/Wishlist.jsx";
+import Home from "./pages/Home.jsx";
 
 import { AuthProvider, useAuth } from "./contexts/AuthContext.jsx";
 import { CartProvider } from "./contexts/CartContext.jsx";
@@ -44,11 +45,6 @@ function App() {
               <div className="min-h-screen relative">
                 {/* App Routes */}
                 <Routes>
-                  {/* Default landing page - redirect to login */}
-                  <Route
-                    path="/"
-                    element={<Navigate to="/auth/login" replace />}
-                  />
 
                   {/* Auth routes - no layout */}
                   <Route path="/auth/login" element={<Login />} />
@@ -64,8 +60,10 @@ function App() {
                     }
                   />
 
-                  {/* Protected routes with layout */}
+                  {/* Public routes with layout */}
                   <Route element={<Layout />}>
+                    <Route index element={<Home />} />
+                    {/* Protected routes */}
                     <Route
                       path="/seller/add"
                       element={

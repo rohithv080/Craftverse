@@ -9,10 +9,12 @@ export default function RoleSelect() {
   const [roleLoading, setRoleLoading] = useState(false)
   const [selectedRole, setSelectedRole] = useState(null)
 
-  // Debug logging
+  // Redirect to login if auth finished without a user
   useEffect(() => {
-    console.log('RoleSelect: User state:', user)
-  }, [user])
+    if (!loading && !user) {
+      navigate('/auth/login', { replace: true })
+    }
+  }, [loading, user, navigate])
 
   const handleRoleSelect = async (role) => {
     if (!user) {
@@ -20,14 +22,12 @@ export default function RoleSelect() {
       return
     }
     
-    console.log('Setting role:', role, 'for user:', user.uid)
     setSelectedRole(role)
     setRoleLoading(true)
     
     try {
       // Set the user role in the database
-      const result = await setUserRole(role)
-      console.log('Role set successfully:', result)
+      await setUserRole(role)
       
       // Navigate based on selected role
       if (role === 'seller') {
@@ -44,13 +44,7 @@ export default function RoleSelect() {
     }
   }
 
-  // If auth finished and there's no user, redirect to login (do not navigate during render)
-  useEffect(() => {
-    if (!loading && !user) {
-      console.log('No user found after auth resolved, redirecting to login')
-      navigate('/auth/login', { replace: true })
-    }
-  }, [loading, user, navigate])
+  // The redirect effect is above
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center p-6">
