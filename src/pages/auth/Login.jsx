@@ -14,8 +14,8 @@ export default function Login() {
   // Redirect if user is already logged in
   useEffect(() => {
     if (user) {
-      // Always redirect to role selection after login
-      navigate('/role-select', { replace: true })
+      // Go to homepage after login
+      navigate('/', { replace: true })
     }
   }, [user, navigate])
 

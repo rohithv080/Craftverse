@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { collection, onSnapshot } from 'firebase/firestore'
-import { db } from '../../firebase/firebaseConfig'
+import useProducts from '../../hooks/useProducts'
 import { Link } from 'react-router-dom'
 import ProductModal from '../../components/ProductModal'
-import heroImg from '../../assets/react.svg'
 import { FaSearch, FaFilter, FaStar, FaShoppingCart, FaHeart, FaEye, FaMapMarkerAlt, FaTruck, FaShieldAlt, FaUsers } from 'react-icons/fa'
 import { useCart } from '../../contexts/CartContext'
 
@@ -21,7 +19,7 @@ function distanceKm(a, b) {
 
 export default function Products() {
   const { items, addToCart, wishlist, addToWishlist, removeFromWishlist } = useCart()
-  const [products, setProducts] = useState([])
+  const { products } = useProducts()
   const [center, setCenter] = useState(null)
   const [active, setActive] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -29,14 +27,7 @@ export default function Products() {
   const [priceRange, setPriceRange] = useState('all')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
 
-  useEffect(() => {
-    const unsub = onSnapshot(collection(db, 'products'), (snap) => {
-      const list = []
-      snap.forEach(d => list.push({ id: d.id, ...d.data() }))
-      setProducts(list)
-    })
-    return () => unsub()
-  }, [])
+  // products come from useProducts
 
   useEffect(() => {
     if (!navigator.geolocation) return
@@ -92,77 +83,12 @@ export default function Products() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-brown-50 to-brown-70 text-white h-full">
-        <div className="max-w-7xl mx-auto px-4 py-16">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-black">
-                Welcome to <span className="text-orange-900">KAITHIRAN</span>
-              </h1>
-              <p className="text-black text-lg mb-6 opacity-90">
-                Your trusted local marketplace connecting buyers and sellers nearby. 
-                Discover curated products, support local businesses, and enjoy fast, reliable delivery.
-              </p>
-              <div className="flex flex-wrap gap-4 mb-6">
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg">
-                  <FaTruck className="text-orange-900" />
-                  <span className="text-sm text-orange-900">Fast Delivery</span>
-                </div>
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg">
-                  <FaShieldAlt className="text-orange-900" />
-                  <span className="text-sm text-orange-900">Secure Payments</span>
-                </div>
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg">
-                  <FaUsers className="text-orange-900" />
-                  <span className="text-sm text-orange-900">Local Sellers</span>
-                </div>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <a href="#products" className="inline-flex items-center justify-center px-6 py-3 bg-orange-900 text-white font-medium rounded-lg shadow hover:bg-gray-100 transition">
-                  Shop Now
-                </a>
-                <button className="inline-flex items-center justify-center px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition">
-                  Learn More
-                </button>
-              </div>
-            </div>
-            <div className="flex justify-center">
-              <div className="relative w-full max-w-md">
-                <div className="absolute -inset-4 bg-white/20 rounded-2xl blur-xl"></div>
-                <div className="relative bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 shadow-2xl">
-                  <img src={heroImg} alt="Marketplace visual" className="w-full h-64 object-contain" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Search and Filters Section */}
-      <div id="products" className="sticky top-0 z-10 bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 py-5">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <h2 className="text-2xl font-bold text-gray-800">Browse Products</h2>
-            
-            <div className="flex items-center gap-4">
-              <Link to="/buyer/cart" className="relative p-2 rounded-full hover:bg-gray-100 transition">
-                <FaShoppingCart className="text-xl text-gray-700" />
-                <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {items.length}
-                </span>
-              </Link>
-              <button 
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="md:hidden flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
-              >
-                <FaFilter />
-                Filters
-              </button>
-            </div>
-          </div>
-          
-          <div className="mt-4 flex flex-col md:flex-row gap-4">
+      {/* Amazon-style Search and Filters */}
+      <div id="products" className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          {/* Search Bar */}
+          <div className="flex items-center gap-4 mb-4">
             <div className="flex-1 relative">
               <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
@@ -170,33 +96,44 @@ export default function Products() {
                 placeholder="Search for products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent shadow-sm"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-l-md focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               />
             </div>
+            <button className="bg-orange-500 text-white px-6 py-2 rounded-r-md hover:bg-orange-600 transition-colors">
+              Search
+            </button>
+          </div>
+
+          {/* Filters Row */}
+          <div className="flex flex-wrap items-center gap-4 text-sm">
+            <span className="text-gray-600 font-medium">Filters:</span>
             
-            <div className={`${isFilterOpen ? 'flex' : 'hidden'} md:flex gap-3 flex-col md:flex-row`}>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border Boot-transparent shadow-sm"
-              >
-                <option value="relevance">Relevance</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="name">Name: A to Z</option>
-              </select>
-              
-              <select
-                value={priceRange}
-                onChange={(e) => setPriceRange(e.target.value)}
-                className="px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent shadow-sm"
-              >
-                <option value="all">All Prices</option>
-                <option value="0-500">Under ₹500</option>
-                <option value="500-1000">₹500 - ₹1000</option>
-                <option value="1000-2000">₹1000 - ₹2000</option>
-                <option value="2000-">Above ₹2000</option>
-              </select>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-3 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+            >
+              <option value="relevance">Sort by: Relevance</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="name">Name: A to Z</option>
+            </select>
+            
+            <select
+              value={priceRange}
+              onChange={(e) => setPriceRange(e.target.value)}
+              className="px-3 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+            >
+              <option value="all">All Prices</option>
+              <option value="0-500">Under ₹500</option>
+              <option value="500-1000">₹500 - ₹1000</option>
+              <option value="1000-2000">₹1000 - ₹2000</option>
+              <option value="2000-">Above ₹2000</option>
+            </select>
+
+            <div className="flex items-center gap-2">
+              <span className="text-gray-600">Results:</span>
+              <span className="font-medium text-orange-600">{visible.length} products</span>
             </div>
           </div>
         </div>
@@ -311,10 +248,6 @@ export default function Products() {
           </div>
         )}
         
-        {/* Results Count */}
-        <div className="mt-8 text-center text-gray-500">
-          Showing {visible.length} of {products.length} products
-        </div>
       </div>
 
       {/* Product Modal */}

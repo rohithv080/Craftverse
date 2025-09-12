@@ -67,39 +67,11 @@ export default function Layout() {
               KAITHIRAN
             </Link>
 
-            {/* Search Bar - Only show on buyer pages */}
-            {isBuyerPage && (
-              <div className="flex-1 max-w-2xl mx-8">
-                <form onSubmit={handleSearch} className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search for products..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  />
-                  <button
-                    type="submit"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
-                  >
-                    <FaSearch className="text-sm" />
-                  </button>
-                </form>
-              </div>
-            )}
 
             {/* Navigation */}
             <nav className="hidden md:flex items-center gap-6">
               {isBuyerPage && (
                 <>
-                  <Link to="/buyer/products" className="text-gray-700 hover:text-orange-500 transition-colors font-medium flex items-center gap-2">
-                    <FaHome />
-                    Products
-                  </Link>
-                  <Link to="/buyer/cart" className="text-gray-700 hover:text-orange-500 transition-colors font-medium flex items-center gap-2">
-                    <FaShoppingCart />
-                    Cart
-                  </Link>
                 </>
               )}
               
@@ -119,13 +91,6 @@ export default function Layout() {
 
             {/* User Actions */}
             <div className="flex items-center gap-4">
-              {/* Cart Icon - Only show on buyer pages */}
-              {isBuyerPage && (
-                <Link to="/buyer/cart" className="relative text-gray-700 hover:text-orange-500 transition-colors">
-                  <FaShoppingCart className="text-2xl" />
-                  <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
-                </Link>
-              )}
               
               {user ? (
                 <div className="relative group">

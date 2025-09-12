@@ -13,8 +13,8 @@ export default function MessageBubble({ role, children }) {
         className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-2 shadow-sm text-sm
           ${
             isUser
-              ? "bg-sky-600 text-white"
-              : "bg-white/95 border border-slate-200 text-slate-800"
+              ? "bg-orange-500 text-white"
+              : "bg-white border border-gray-200 text-gray-800"
           }`}
       >
         {children}

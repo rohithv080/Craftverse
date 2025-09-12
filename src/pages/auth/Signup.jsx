@@ -26,10 +26,10 @@ export default function Signup() {
       setShowSuccessPopup(true)
       show('Account created successfully!')
       
-      // Show success message for 2 seconds then navigate to role selection
+      // Show success message for 2 seconds then navigate to homepage
       setTimeout(() => {
         setShowSuccessPopup(false)
-        navigate('/role-select', { replace: true })
+        navigate('/', { replace: true })
       }, 2000)
     } catch (err) {
       setError(err.message || 'Failed to sign up')
