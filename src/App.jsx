@@ -14,6 +14,11 @@ import Profile from "./pages/buyer/Profile.jsx";
 import OrderHistory from "./pages/buyer/OrderHistory.jsx";
 import Wishlist from "./pages/buyer/Wishlist.jsx";
 import Home from "./pages/Home.jsx";
+import Support from "./pages/Support.jsx";
+import HelpCenter from "./pages/HelpCenter.jsx";
+import Returns from "./pages/Returns.jsx";
+import Shipping from "./pages/Shipping.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 import { AuthProvider, useAuth } from "./contexts/AuthContext.jsx";
 import { CartProvider } from "./contexts/CartContext.jsx";
@@ -63,7 +68,12 @@ function App() {
                   {/* Public routes with layout */}
                   <Route element={<Layout />}>
                     <Route index element={<Home />} />
+                    {/* Scroll to top on navigation helper */}
                     {/* Protected routes */}
+                    <Route path="/support" element={<Support />} />
+                    <Route path="/help" element={<HelpCenter />} />
+                    <Route path="/returns" element={<Returns />} />
+                    <Route path="/shipping" element={<Shipping />} />
                     <Route
                       path="/seller/add"
                       element={
@@ -139,10 +149,7 @@ function App() {
                 </Route>
 
                   {/* Fallback route */}
-                  <Route
-                    path="*"
-                    element={<Navigate to="/auth/login" replace />}
-                  />
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
 
                 {/* ✅ Floating chatbot UI */}

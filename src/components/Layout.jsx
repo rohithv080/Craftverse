@@ -1,8 +1,9 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
+import ScrollToTop from './ScrollToTop'
 import { useAuth } from '../contexts/AuthContext'
 import { useTheme, themes } from '../contexts/ThemeContext'
 import { FaSearch, FaUser, FaShoppingCart, FaBars, FaTimes, FaStore, FaHome } from 'react-icons/fa'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function Layout() {
   const { user, logout } = useAuth()
@@ -22,6 +23,14 @@ export default function Layout() {
   // Check if user is on buyer or seller pages
   const isBuyerPage = location.pathname.startsWith('/buyer')
   const isSellerPage = location.pathname.startsWith('/seller')
+
+  const [elevated, setElevated] = useState(false)
+  useEffect(() => {
+    const onScroll = () => setElevated(window.scrollY > 8)
+    onScroll()
+    window.addEventListener('scroll', onScroll)
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -50,7 +59,7 @@ export default function Layout() {
       </div>
 
       {/* Main Header */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-50">
+      <header className={`sticky top-0 z-50 ${elevated ? 'backdrop-blur bg-white/80 border-b shadow-sm' : 'bg-white border-b'}`}>
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
@@ -212,6 +221,7 @@ export default function Layout() {
 
       {/* Main Content */}
       <main className="flex-1">
+        <ScrollToTop />
         <Outlet />
       </main>
 
@@ -238,18 +248,18 @@ export default function Layout() {
             <div>
               <h4 className="font-semibold mb-4">Customer Service</h4>
               <ul className="space-y-2 text-gray-400">
-                <li>Contact Support</li>
-                <li>Help Center</li>
-                <li>Returns & Refunds</li>
-                <li>Shipping Info</li>
+                <li><Link to="/support" className="hover:text-white transition-colors">Contact Support</Link></li>
+                <li><Link to="/help" className="hover:text-white transition-colors">Help Center</Link></li>
+                <li><Link to="/returns" className="hover:text-white transition-colors">Returns & Refunds</Link></li>
+                <li><Link to="/shipping" className="hover:text-white transition-colors">Shipping Info</Link></li>
               </ul>
             </div>
             
             <div>
               <h4 className="font-semibold mb-4">Connect With Us</h4>
               <div className="text-gray-400">
-                <p>Email: support@kaithiran.com</p>
-                <p>Phone: +91 98765 43210</p>
+                <p>Email: <a href="mailto:support@kaithiran.com" className="hover:text-white">support@kaithiran.com</a></p>
+                <p>Phone: <a href="tel:+919876543210" className="hover:text-white">+91 98765 43210</a></p>
                 <p className="mt-4">Follow us on social media</p>
               </div>
             </div>
@@ -260,6 +270,15 @@ export default function Layout() {
           </div>
         </div>
       </footer>
+
+      {/* Back to top */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="fixed bottom-6 right-6 p-3 rounded-full shadow-lg bg-orange-500 text-white hover:bg-orange-600"
+        aria-label="Back to top"
+      >
+        ↑
+      </button>
     </div>
   )
 }
