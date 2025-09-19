@@ -31,33 +31,33 @@ export default function Wishlist() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {wishlist.map(product => (
-              <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100">
+              <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow">
                 <div className="relative overflow-hidden">
                   <img
                     src={product.imageUrl}
                     alt={product.name}
-                    className="w-full h-56 object-cover"
+                    className="w-full h-40 object-cover hover:scale-105 transition-transform duration-300"
                   />
                 </div>
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 mb-2">{product.name}</h3>
-                  <div className="text-xl font-bold text-gray-900 mb-2">₹{product.price?.toLocaleString()}</div>
-                  <div className="flex gap-2">
+                <div className="p-3">
+                  <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 mb-2">{product.name}</h3>
+                  <div className="text-lg font-bold text-gray-900 mb-3">₹{product.price?.toLocaleString()}</div>
+                  <div className="flex gap-1">
                     <button
                       onClick={() => handleAddToCart(product)}
                       disabled={addingId === product.id}
-                      className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium disabled:opacity-60"
+                      className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors text-xs font-medium disabled:opacity-60"
                     >
-                      <FaShoppingCart className="text-sm" />
+                      <FaShoppingCart className="text-xs" />
                       {addingId === product.id ? 'Adding...' : 'Add to Cart'}
                     </button>
                     <button
                       onClick={() => removeFromWishlist(product.id)}
-                      className="flex-1 flex items-center justify-center gap-2 py-2 px-3 border border-red-600 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium"
+                      className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 border border-red-600 text-red-600 rounded-md hover:bg-red-50 transition-colors text-xs font-medium"
                     >
-                      <FaHeartBroken className="text-sm" />
+                      <FaHeartBroken className="text-xs" />
                       Remove
                     </button>
                   </div>

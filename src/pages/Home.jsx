@@ -1,7 +1,5 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { db } from '../firebase/firebaseConfig'
-import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore'
 
 // Animated counter hook
 function useAnimatedCounter(target, duration = 2000) {
@@ -33,23 +31,10 @@ function useAnimatedCounter(target, duration = 2000) {
 }
 
 export default function Home() {
-  const [arrivals, setArrivals] = useState([])
-  const [loadingArrivals, setLoadingArrivals] = useState(true)
-  
   // Animated counters - all end at the same time
   const animatedSellers = useAnimatedCounter(1500, 3000)
   const animatedCustomers = useAnimatedCounter(15000, 3000)
   const animatedProducts = useAnimatedCounter(10000, 3000)
-  useEffect(() => {
-    const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'), limit(8))
-    const unsub = onSnapshot(q, (snap) => {
-      const list = []
-      snap.forEach(d => list.push({ id: d.id, ...d.data() }))
-      setArrivals(list)
-      setLoadingArrivals(false)
-    })
-    return () => unsub()
-  }, [])
 
   return (
     <div>
@@ -135,80 +120,6 @@ export default function Home() {
                 <Link to="/buyer/products" className="btn-primary">Start Shopping</Link>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* New Arrivals */}
-      {loadingArrivals ? (
-        <section className="bg-white">
-          <div className="max-w-7xl mx-auto px-4 py-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">New Arrivals</h2>
-              <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="card overflow-hidden">
-                  <div className="h-40 w-full bg-gray-200 animate-pulse" />
-                  <div className="p-4 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
-                    <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : arrivals.length > 0 && (
-        <section className="bg-white">
-          <div className="max-w-7xl mx-auto px-4 py-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">New Arrivals</h2>
-              <Link to="/buyer/products" className="text-sm font-medium text-orange-600">Browse all</Link>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-              {arrivals.map(p => (
-                <Link key={p.id} to={`/buyer/products?search=${encodeURIComponent(p.name || '')}`} className="group card overflow-hidden hover:shadow-md transition-shadow">
-                  <img src={p.imageUrl} alt={p.name} className="h-40 w-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
-                  <div className="p-4">
-                    <div className="font-semibold text-gray-900 truncate">{p.name}</div>
-                    <div className="text-orange-600 font-bold mt-1">₹{p.price}</div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Featured Categories */}
-      <section className="bg-stone-50">
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Featured Categories</h2>
-            <Link to="/buyer/products" className="text-sm font-medium text-orange-600">View all</Link>
-          </div>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-            {[
-              { title: 'Fashion', local: '/categories/fashion.jpg', fallback: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1200&auto=format&fit=crop' },
-              { title: 'Gifts', local: '/categories/gifts.jpg', fallback: 'https://images.unsplash.com/photo-1512909006721-3d6018887383?q=80&w=1200&auto=format&fit=crop' },
-              { title: 'Home & Living', local: '/categories/home.jpg', fallback: 'https://images.unsplash.com/photo-1493666438817-866a91353ca9?q=80&w=1600&auto=format&fit=crop' },
-              { title: 'Stationery', local: '/categories/stationery.jpg', fallback: 'https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1600&auto=format&fit=crop' },
-            ].map(c => (
-              <Link key={c.title} to={`/buyer/products?category=${encodeURIComponent(c.title)}`} className="group relative overflow-hidden rounded-2xl shadow-sm border border-stone-200">
-                <img 
-                  src={c.local}
-                  onError={(e)=>{ e.currentTarget.onerror=null; e.currentTarget.src=c.fallback; }}
-                  alt={c.title} 
-                  className="h-44 w-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                />
-                <div className="absolute inset-0 bg-black/20" />
-                <div className="absolute bottom-0 left-0 right-0 p-4">
-                  <span className="inline-block bg-white/90 backdrop-blur px-3 py-1 rounded-md text-sm font-semibold text-gray-900">{c.title}</span>
-                </div>
-              </Link>
-            ))}
           </div>
         </div>
       </section>

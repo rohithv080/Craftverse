@@ -1,15 +1,17 @@
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import emailjs from '@emailjs/browser'
 import { useState } from 'react'
-import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { db } from '../../firebase/firebaseConfig'
 import { useCart } from '../../contexts/CartContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { FaArrowLeft, FaMapMarkerAlt, FaCreditCard, FaLock, FaShieldAlt, FaTruck } from 'react-icons/fa'
 
 export default function Checkout() {
   const location = useLocation()
   const navigate = useNavigate()
   const { clearCart } = useCart()
+  const { user } = useAuth()
   const product = location.state?.product
   const cart = location.state?.cart
   const items = cart || (product ? [{ ...product, qty: 1 }] : [])
@@ -27,10 +29,15 @@ export default function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState('cod')
 
   const subtotal = total
-  const deliveryFee = items.length > 0 ? 40 : 0
+  const deliveryFee = items.length > 0 && subtotal < 500 ? 40 : 0
   const finalTotal = subtotal + deliveryFee
 
   async function handlePay() {
+    if (!user) {
+      setError('Please log in to complete your order')
+      return
+    }
+    
     if (!deliveryAddress.fullName || !deliveryAddress.phone || !deliveryAddress.address || !deliveryAddress.city || !deliveryAddress.state || !deliveryAddress.pincode) {
       setError('Please fill in all delivery address fields')
       return
@@ -63,6 +70,35 @@ export default function Checkout() {
           quantity: Math.max((productData.quantity || 0) - item.qty, 0)
         })
       }
+
+      // Create order in database
+      const orderData = {
+        buyerId: user?.uid || 'anonymous',
+        items: items.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          qty: item.qty,
+          imageUrl: item.imageUrl
+        })),
+        total: finalTotal,
+        subtotal: subtotal,
+        deliveryFee: deliveryFee,
+        deliveryAddress: {
+          fullName: deliveryAddress.fullName,
+          phone: deliveryAddress.phone,
+          address: deliveryAddress.address,
+          city: deliveryAddress.city,
+          state: deliveryAddress.state,
+          pincode: deliveryAddress.pincode
+        },
+        paymentMethod: paymentMethod,
+        status: 'pending',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      }
+
+      await addDoc(collection(db, 'orders'), orderData)
 
       // Send email via EmailJS if environment variables are configured
       const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID

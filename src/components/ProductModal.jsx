@@ -16,14 +16,70 @@ export default function ProductModal({ product, onClose }) {
         <div className="p-4">
           <div className="text-xl font-bold" style={{ color: 'rgb(var(--text))' }}>{product.name}</div>
           <div className="font-bold mb-2" style={{ color: 'rgb(var(--primary))' }}>₹{product.price}</div>
+          
+          {/* Stock Information */}
+          <div className="mb-3">
+            {product.quantity === 0 ? (
+              <span className="inline-block px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                Out of Stock
+              </span>
+            ) : product.quantity <= 5 ? (
+              <span className="inline-block px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
+                Only {product.quantity} left in stock
+              </span>
+            ) : (
+              <span className="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                In Stock
+              </span>
+            )}
+          </div>
+          
           <div className="text-gray-700 mb-4 whitespace-pre-line">{product.description}</div>
           <div className="flex items-center gap-3 mb-4">
             <span className="text-sm">Qty</span>
-            <input type="number" min="1" value={qty} onChange={(e)=>setQty(Number(e.target.value))} className="w-20 border rounded px-2 py-1" />
+            <input 
+              type="number" 
+              min="1" 
+              max={product.quantity || 0}
+              value={qty} 
+              onChange={(e)=>setQty(Math.min(Number(e.target.value), product.quantity || 0))} 
+              disabled={product.quantity === 0}
+              className="w-20 border rounded px-2 py-1 disabled:bg-gray-100 disabled:cursor-not-allowed" 
+            />
           </div>
           <div className="flex gap-3">
-            <button onClick={()=>{ addToCart(product, qty); onClose() }} className="flex-1 btn-secondary rounded-md py-2 font-medium">Add to Cart</button>
-            <Link to="/buyer/checkout" state={{ product, qty }} className="flex-1 text-center btn-primary rounded-md py-2 font-medium">Buy Now</Link>
+            <button 
+              onClick={()=>{ 
+                if (product.quantity > 0) {
+                  addToCart(product, qty); 
+                  onClose();
+                }
+              }} 
+              disabled={product.quantity === 0}
+              className={`flex-1 rounded-md py-2 font-medium ${
+                product.quantity === 0 
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                  : 'btn-secondary'
+              }`}
+            >
+              Add to Cart
+            </button>
+            {product.quantity > 0 ? (
+              <Link 
+                to="/buyer/checkout" 
+                state={{ product, qty }} 
+                className="flex-1 text-center btn-primary rounded-md py-2 font-medium"
+              >
+                Buy Now
+              </Link>
+            ) : (
+              <button 
+                disabled 
+                className="flex-1 text-center bg-gray-300 text-gray-500 cursor-not-allowed rounded-md py-2 font-medium"
+              >
+                Buy Now
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -11,21 +11,31 @@ export default function OrderHistory() {
   const [selectedOrder, setSelectedOrder] = useState(null)
 
   useEffect(() => {
-    if (!user) return
+    if (!user) {
+      setLoading(false)
+      return
+    }
+    
     const q = query(
       collection(db, 'orders'),
       where('buyerId', '==', user.uid),
       orderBy('createdAt', 'desc')
     )
 
-    const unsub = onSnapshot(q, (snapshot) => {
-      const orderList = []
-      snapshot.forEach(doc => {
-        orderList.push({ id: doc.id, ...doc.data() })
-      })
-      setOrders(orderList)
-      setLoading(false)
-    })
+    const unsub = onSnapshot(q, 
+      (snapshot) => {
+        const orderList = []
+        snapshot.forEach(doc => {
+          orderList.push({ id: doc.id, ...doc.data() })
+        })
+        setOrders(orderList)
+        setLoading(false)
+      },
+      (error) => {
+        console.error('Error fetching orders:', error)
+        setLoading(false)
+      }
+    )
 
     return () => unsub()
   }, [user])
@@ -80,6 +90,20 @@ export default function OrderHistory() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-orange-500 text-lg">Loading order history...</div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-gray-400 text-6xl mb-4">🔒</div>
+          <div className="text-gray-500 text-xl mb-4">Please log in to view your orders</div>
+          <a href="/auth/login" className="text-orange-500 hover:text-orange-600 underline">
+            Go to Login
+          </a>
+        </div>
       </div>
     )
   }

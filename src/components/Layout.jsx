@@ -23,6 +23,7 @@ export default function Layout() {
   // Check if user is on buyer or seller pages
   const isBuyerPage = location.pathname.startsWith('/buyer')
   const isSellerPage = location.pathname.startsWith('/seller')
+  const isHomePage = location.pathname === '/'
 
   const [elevated, setElevated] = useState(false)
   useEffect(() => {
@@ -67,11 +68,43 @@ export default function Layout() {
               KAITHIRAN
             </Link>
 
+            {/* Search Bar - Desktop Only */}
+            {!isHomePage && (
+              <div className="hidden md:flex flex-1 max-w-xl mx-8">
+                <form onSubmit={handleSearch} className="relative w-full">
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search for products..."
+                    className="w-full px-4 py-2 pl-10 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  />
+                  <button
+                    type="submit"
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-orange-500 transition-colors"
+                  >
+                    <FaSearch />
+                  </button>
+                </form>
+              </div>
+            )}
 
             {/* Navigation */}
             <nav className="hidden md:flex items-center gap-6">
               {isBuyerPage && (
                 <>
+                  <Link to="/buyer/products" className="text-gray-700 hover:text-orange-500 transition-colors font-medium">
+                    Products
+                  </Link>
+                  <Link to="/buyer/wishlist" className="text-gray-700 hover:text-orange-500 transition-colors font-medium">
+                    Wishlist
+                  </Link>
+                  <Link to="/buyer/cart" className="text-gray-700 hover:text-orange-500 transition-colors font-medium">
+                    Cart
+                  </Link>
+                  <Link to="/buyer/orders" className="text-gray-700 hover:text-orange-500 transition-colors font-medium">
+                    My Orders
+                  </Link>
                 </>
               )}
               
@@ -129,6 +162,25 @@ export default function Layout() {
           {isMobileMenuOpen && (
             <div className="md:hidden mt-4 pb-4 border-t border-gray-200">
               <div className="pt-4 space-y-3">
+                {/* Mobile Search */}
+                {!isHomePage && (
+                  <form onSubmit={handleSearch} className="relative">
+                    <input
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder="Search for products..."
+                      className="w-full px-4 py-2 pl-10 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    />
+                    <button
+                      type="submit"
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-orange-500 transition-colors"
+                    >
+                      <FaSearch />
+                    </button>
+                  </form>
+                )}
+                
                 {isBuyerPage && (
                   <>
                     <Link 
@@ -144,6 +196,13 @@ export default function Layout() {
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Cart
+                    </Link>
+                    <Link 
+                      to="/buyer/orders" 
+                      className="block text-gray-700 hover:text-orange-500 transition-colors font-medium"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      My Orders
                     </Link>
                   </>
                 )}
