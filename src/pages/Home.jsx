@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { db } from '../firebase/firebaseConfig'
+import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore'
 
 // Animated counter hook
 function useAnimatedCounter(target, duration = 2000) {
@@ -35,6 +37,22 @@ export default function Home() {
   const animatedSellers = useAnimatedCounter(1500, 3000)
   const animatedCustomers = useAnimatedCounter(15000, 3000)
   const animatedProducts = useAnimatedCounter(10000, 3000)
+
+  // New Arrivals state
+  const [arrivals, setArrivals] = useState([])
+  const [loadingArrivals, setLoadingArrivals] = useState(true)
+
+  // Fetch New Arrivals
+  useEffect(() => {
+    const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'), limit(6))
+    const unsub = onSnapshot(q, (snap) => {
+      const list = []
+      snap.forEach(d => list.push({ id: d.id, ...d.data() }))
+      setArrivals(list)
+      setLoadingArrivals(false)
+    })
+    return () => unsub()
+  }, [])
 
   return (
     <div>
@@ -121,6 +139,116 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Featured Categories Section */}
+      <section className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Featured Categories</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { title: 'Fashion', local: '/categories/fashion.jpg', fallback: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1200&auto=format&fit=crop' },
+              { title: 'Gifts', local: '/categories/gifts.jpg', fallback: 'https://images.unsplash.com/photo-1512909006721-3d6018887383?q=80&w=1200&auto=format&fit=crop' },
+              { title: 'Home & Living', local: '/categories/home.jpg', fallback: 'https://images.unsplash.com/photo-1493666438817-866a91353ca9?q=80&w=1600&auto=format&fit=crop' },
+              { title: 'Pottery Items', local: '/categories/pottery.jpg', fallback: 'https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1600&auto=format&fit=crop' },
+            ].map(c => (
+              <Link 
+                key={c.title} 
+                to={`/buyer/products?category=${encodeURIComponent(c.title)}`}
+                className="group relative overflow-hidden rounded-2xl shadow-sm border border-stone-200 hover:shadow-lg transition-all duration-300"
+              >
+                <img 
+                  src={c.local}
+                  onError={(e)=>{ e.currentTarget.onerror=null; e.currentTarget.src=c.fallback; }}
+                  alt={c.title} 
+                  className="h-44 w-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                />
+                <div className="absolute inset-0 bg-black/20" />
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <span className="inline-block bg-white/90 backdrop-blur px-3 py-1 rounded-md text-sm font-semibold text-gray-900">{c.title}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* New Arrivals Section */}
+      <section className="bg-stone-50">
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          {loadingArrivals ? (
+            <div>
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">New Arrivals</h2>
+                <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="card overflow-hidden">
+                    <div className="h-48 w-full bg-gray-200 animate-pulse" />
+                    <div className="p-4 space-y-3">
+                      <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
+                      <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : arrivals.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">New Arrivals</h2>
+                <Link to="/buyer/products" className="text-orange-600 hover:text-orange-700 font-medium">
+                  View All →
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {arrivals.map(p => (
+                  <Link 
+                    key={p.id} 
+                    to={`/buyer/products?search=${encodeURIComponent(p.name || '')}`}
+                    className="group card overflow-hidden hover:shadow-lg transition-all duration-300"
+                  >
+                    <div className="relative overflow-hidden">
+                      <img 
+                        src={p.imageUrl} 
+                        alt={p.name} 
+                        className="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                        loading="lazy" 
+                      />
+                      <div className="absolute top-3 left-3">
+                        <span className="inline-block px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full">
+                          New
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-semibold text-gray-900 truncate mb-2">{p.name}</h3>
+                      <div className="text-orange-600 font-bold text-lg mb-3">₹{p.price}</div>
+                      <div>
+                        {p.quantity === 0 ? (
+                          <span className="inline-block px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                            Out of Stock
+                          </span>
+                        ) : p.quantity <= 5 ? (
+                          <span className="inline-block px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
+                            Only {p.quantity} left
+                          </span>
+                        ) : (
+                          <span className="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                            In Stock
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

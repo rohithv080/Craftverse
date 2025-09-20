@@ -4,8 +4,6 @@ import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import ProductModal from '../../components/ProductModal'
 import { FaSearch, FaFilter, FaStar, FaShoppingCart, FaHeart, FaCreditCard, FaMapMarkerAlt, FaTruck, FaShieldAlt, FaUsers } from 'react-icons/fa'
 import { useCart } from '../../contexts/CartContext'
-import { db } from '../../firebase/firebaseConfig'
-import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore'
 
 function distanceKm(a, b) {
   if (!a || !b || a.lat == null || a.lng == null || b.lat == null || b.lng == null) return Infinity
@@ -33,10 +31,6 @@ export default function Products() {
   const [ratingFilter, setRatingFilter] = useState('all')
   const [brandFilter, setBrandFilter] = useState('all')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-  
-  // New Arrivals state
-  const [arrivals, setArrivals] = useState([])
-  const [loadingArrivals, setLoadingArrivals] = useState(true)
 
   // Initialize search term and category from URL parameters
   useEffect(() => {
@@ -50,18 +44,6 @@ export default function Products() {
       setSelectedCategory(urlCategory)
     }
   }, [searchParams])
-
-  // Fetch New Arrivals
-  useEffect(() => {
-    const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'), limit(6))
-    const unsub = onSnapshot(q, (snap) => {
-      const list = []
-      snap.forEach(d => list.push({ id: d.id, ...d.data() }))
-      setArrivals(list)
-      setLoadingArrivals(false)
-    })
-    return () => unsub()
-  }, [])
 
   // products come from useProducts
 
@@ -183,7 +165,7 @@ export default function Products() {
                     { value: 'Fashion', label: 'Fashion', count: products.filter(p => p.category === 'Fashion').length },
                     { value: 'Gifts', label: 'Gifts', count: products.filter(p => p.category === 'Gifts').length },
                     { value: 'Home & Living', label: 'Home & Living', count: products.filter(p => p.category === 'Home & Living').length },
-                    { value: 'Stationery', label: 'Stationery', count: products.filter(p => p.category === 'Stationery').length }
+                    { value: 'Pottery Items', label: 'Pottery Items', count: products.filter(p => p.category === 'Pottery Items').length }
                   ].map(category => (
                     <label key={category.value} className="flex items-center justify-between cursor-pointer group">
                       <div className="flex items-center">
@@ -322,7 +304,7 @@ export default function Products() {
                     <option value="Fashion">Fashion</option>
                     <option value="Gifts">Gifts</option>
                     <option value="Home & Living">Home & Living</option>
-                    <option value="Stationery">Stationery</option>
+                    <option value="Pottery Items">Pottery Items</option>
                   </select>
                   
                   <select
@@ -338,95 +320,6 @@ export default function Products() {
                   </select>
                 </div>
               </div>
-            )}
-
-            {/* New Arrivals Section */}
-            {!searchTerm && (
-              loadingArrivals ? (
-                <section className="bg-white rounded-lg shadow-sm p-6 mb-8">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900">New Arrivals</h2>
-                    <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                      <div key={i} className="card overflow-hidden">
-                        <div className="h-40 w-full bg-gray-200 animate-pulse" />
-                        <div className="p-4 space-y-2">
-                          <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
-                          <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              ) : arrivals.length > 0 && (
-                <section className="bg-white rounded-lg shadow-sm p-6 mb-8">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900">New Arrivals</h2>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {arrivals.map(p => (
-                      <div key={p.id} onClick={() => setSearchTerm(p.name || '')} className="group card overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
-                        <img src={p.imageUrl} alt={p.name} className="h-40 w-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
-                        <div className="p-4">
-                          <div className="font-semibold text-gray-900 truncate">{p.name}</div>
-                          <div className="text-orange-600 font-bold mt-1">₹{p.price}</div>
-                          <div className="mt-2">
-                            {p.quantity === 0 ? (
-                              <span className="inline-block px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
-                                Out of Stock
-                              </span>
-                            ) : p.quantity <= 5 ? (
-                              <span className="inline-block px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
-                                Only {p.quantity} left
-                              </span>
-                            ) : (
-                              <span className="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                                In Stock
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )
-            )}
-
-            {/* Featured Categories Section */}
-            {!searchTerm && (
-              <section className="bg-stone-50 rounded-xl shadow-sm p-8 mb-8">
-                <div className="flex items-center justify-between mb-8">
-                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Featured Categories</h2>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                  {[
-                    { title: 'Fashion', local: '/categories/fashion.jpg', fallback: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1200&auto=format&fit=crop' },
-                    { title: 'Gifts', local: '/categories/gifts.jpg', fallback: 'https://images.unsplash.com/photo-1512909006721-3d6018887383?q=80&w=1200&auto=format&fit=crop' },
-                    { title: 'Home & Living', local: '/categories/home.jpg', fallback: 'https://images.unsplash.com/photo-1493666438817-866a91353ca9?q=80&w=1600&auto=format&fit=crop' },
-                    { title: 'Stationery', local: '/categories/stationery.jpg', fallback: 'https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1600&auto=format&fit=crop' },
-                  ].map(c => (
-                    <div 
-                      key={c.title} 
-                      onClick={() => setSelectedCategory(c.title)} 
-                      className="group relative overflow-hidden rounded-2xl shadow-sm border border-stone-200 cursor-pointer hover:shadow-md transition-shadow"
-                    >
-                      <img 
-                        src={c.local}
-                        onError={(e)=>{ e.currentTarget.onerror=null; e.currentTarget.src=c.fallback; }}
-                        alt={c.title} 
-                        className="h-44 w-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                      />
-                      <div className="absolute inset-0 bg-black/20" />
-                      <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <span className="inline-block bg-white/90 backdrop-blur px-3 py-1 rounded-md text-sm font-semibold text-gray-900">{c.title}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
             )}
 
             {/* All Products Section */}
@@ -503,13 +396,6 @@ export default function Products() {
                   {p.discount && (
                     <div className="absolute top-4 left-4 bg-gradient-to-r from-red-500 to-red-600 text-white text-sm font-bold px-3 py-2 rounded-full shadow-lg animate-pulse">
                       🔥 {p.discount}% OFF
-                    </div>
-                  )}
-                  
-                  {/* New Arrival Badge */}
-                  {arrivals.some(arrival => arrival.id === p.id) && (
-                    <div className="absolute top-16 left-4 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs font-bold px-2 py-1 rounded-full">
-                      ✨ NEW
                     </div>
                   )}
                   

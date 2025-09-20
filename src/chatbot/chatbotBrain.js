@@ -18,7 +18,7 @@ export function classifyIntent(text) {
   if (/\b(show|find|search|looking for|recommend|browse|list|display|what|which|tell me about)\b/.test(t)) return "search";
   
   // Category specific patterns
-  if (/\b(pottery|ceramic|clay|handmade|wooden|wood|jewelry|fashion|gifts|home|living|stationery)\b/.test(t)) return "search";
+  if (/\b(pottery|ceramic|clay|handmade|wooden|wood|jewelry|fashion|gifts|home|living|pottery items)\b/.test(t)) return "search";
   
   // Trending/popular patterns
   if (/\b(trending|popular|best|top|hot|new|latest|featured|bestseller|bestselling)\b/.test(t)) return "trending";
@@ -61,7 +61,7 @@ export function extractKeywords(text) {
     'fashion': ['fashion', 'clothing', 'dress', 'shirt'],
     'gifts': ['gift', 'present', 'surprise'],
     'home': ['home', 'living', 'decor', 'decoration'],
-    'stationery': ['stationery', 'pen', 'paper', 'notebook']
+    'pottery items': ['pottery', 'ceramic', 'clay', 'pottery items', 'ceramics']
   };
 
   // Expand keywords based on category mappings

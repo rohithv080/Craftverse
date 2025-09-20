@@ -5,6 +5,7 @@ import Login from "./pages/auth/Login.jsx";
 import Signup from "./pages/auth/Signup.jsx";
 import RoleSelect from "./pages/RoleSelect.jsx";
 import AddProduct from "./pages/seller/AddProduct.jsx";
+import EditProduct from "./pages/seller/EditProduct.jsx";
 import SellerDashboard from "./pages/seller/Dashboard.jsx";
 import Products from "./pages/buyer/Products.jsx";
 import Cart from "./pages/buyer/Cart.jsx";
@@ -79,6 +80,14 @@ function App() {
                       element={
                         <ProtectedRoute>
                           <AddProduct />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/seller/edit/:id"
+                      element={
+                        <ProtectedRoute>
+                          <EditProduct />
                         </ProtectedRoute>
                       }
                     />
