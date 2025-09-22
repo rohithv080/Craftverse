@@ -19,15 +19,11 @@ import HelpCenter from "./pages/HelpCenter.jsx";
 import Returns from "./pages/Returns.jsx";
 import Shipping from "./pages/Shipping.jsx";
 import NotFound from "./pages/NotFound.jsx";
-
 import { AuthProvider, useAuth } from "./contexts/AuthContext.jsx";
 import { CartProvider } from "./contexts/CartContext.jsx";
 import { ToastProvider } from "./contexts/ToastContext.jsx";
 import { ThemeProvider } from "./contexts/ThemeContext.jsx";
-
-// ✅ Chatbot wrapper
 import Chatbot from "./components/chatbot.jsx";
-
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) {
@@ -39,7 +35,6 @@ function ProtectedRoute({ children }) {
   }
   return user ? children : <Navigate to="/auth/login" replace />;
 }
-
 function App() {
   return (
     <ThemeProvider>
@@ -50,21 +45,11 @@ function App() {
               <div className="min-h-screen relative">
                 {/* App Routes */}
                 <Routes>
-
                   {/* Auth routes - no layout */}
                   <Route path="/auth/login" element={<Login />} />
                   <Route path="/auth/signup" element={<Signup />} />
-
                   {/* Role selection - no layout */}
-                  <Route
-                    path="/role-select"
-                    element={
-                      <ProtectedRoute>
-                        <RoleSelect />
-                      </ProtectedRoute>
-                    }
-                  />
-
+                  <Route path="/role-select" element={<ProtectedRoute><RoleSelect /></ProtectedRoute>}/>
                   {/* Public routes with layout */}
                   <Route element={<Layout />}>
                     <Route index element={<Home />} />
@@ -74,85 +59,18 @@ function App() {
                     <Route path="/help" element={<HelpCenter />} />
                     <Route path="/returns" element={<Returns />} />
                     <Route path="/shipping" element={<Shipping />} />
-                    <Route
-                      path="/seller/add"
-                      element={
-                        <ProtectedRoute>
-                          <AddProduct />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/seller/dashboard"
-                      element={
-                        <ProtectedRoute>
-                          <SellerDashboard />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/buyer/products"
-                      element={
-                        <ProtectedRoute>
-                          <Products />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/buyer/cart"
-                      element={
-                        <ProtectedRoute>
-                          <Cart />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/buyer/checkout"
-                      element={
-                        <ProtectedRoute>
-                          <Checkout />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/buyer/order-confirmation"
-                      element={
-                        <ProtectedRoute>
-                          <OrderConfirmation />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/buyer/profile"
-                      element={
-                        <ProtectedRoute>
-                          <Profile />
-                        </ProtectedRoute>
-                      }
-                    />
-                  <Route
-                    path="/buyer/orders"
-                    element={
-                      <ProtectedRoute>
-                        <OrderHistory />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/buyer/wishlist"
-                    element={
-                      <ProtectedRoute>
-                        <Wishlist />
-                      </ProtectedRoute>
-                    }
-                  />
+                    <Route path="/seller/add" element={<ProtectedRoute><AddProduct /></ProtectedRoute>}/>
+                    <Route path="/seller/dashboard" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>}/>
+                    <Route path="/buyer/products" element={<ProtectedRoute><Products /></ProtectedRoute>}/>
+                    <Route path="/buyer/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>}/>
+                    <Route path="/buyer/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>}/>
+                    <Route path="/buyer/order-confirmation" element={<ProtectedRoute><OrderConfirmation /></ProtectedRoute>}/>
+                    <Route path="/buyer/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>}/>
+                  <Route path="/buyer/orders" element={<ProtectedRoute><OrderHistory /></ProtectedRoute>}/>
+                  <Route path="/buyer/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>}/>
                 </Route>
-
-                  {/* Fallback route */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-
-                {/* ✅ Floating chatbot UI */}
                 <Chatbot />
               </div>
             </BrowserRouter>
@@ -162,5 +80,4 @@ function App() {
     </ThemeProvider>
   );  
 }
-
 export default App;
