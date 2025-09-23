@@ -104,13 +104,21 @@ export default function SellerDashboard() {
     return list
   }, [products, search, category, statusFilter, sortBy, sortDir])
 
+  // Calculate filtered stats
+  const filteredStats = useMemo(() => {
+    const totalProducts = filteredAndSorted.length
+    const totalSales = filteredAndSorted.reduce((sum, p) => sum + (p.sales || 0), 0)
+    const totalStock = filteredAndSorted.reduce((sum, p) => sum + (p.quantity || 0), 0)
+    const remaining = Math.max(totalStock - totalSales, 0)
+    return { totalProducts, totalSales, remaining }
+  }, [filteredAndSorted])
+
   async function handleDelete(productId) {
     if (!confirm('Delete this product permanently?')) return
     try {
       await deleteDoc(doc(db, 'products', productId))
       show('Product deleted')
     } catch (err) {
-      console.error(err)
       show(err.message || 'Failed to delete', 'error')
     }
   }
@@ -121,7 +129,6 @@ export default function SellerDashboard() {
       await updateDoc(doc(db, 'products', p.id), { status: next })
       show(`Status set to ${next}`)
     } catch (err) {
-      console.error(err)
       show(err.message || 'Failed to update status', 'error')
     }
   }
@@ -211,6 +218,16 @@ export default function SellerDashboard() {
                   Export CSV
                 </button>
               </div>
+              {(search.trim() || category !== 'all' || statusFilter !== 'all') && (
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <div className="text-sm text-gray-600">
+                    Showing {filteredStats.totalProducts} of {stats.totalProducts} products
+                    {search.trim() && <span className="ml-2 text-orange-600">• Search: "{search}"</span>}
+                    {category !== 'all' && <span className="ml-2 text-blue-600">• Category: {category}</span>}
+                    {statusFilter !== 'all' && <span className="ml-2 text-green-600">• Status: {statusFilter}</span>}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -221,7 +238,7 @@ export default function SellerDashboard() {
                   </div>
                   <div>
                     <div className="text-sm text-gray-600">Total Products</div>
-                    <div className="text-3xl font-bold text-gray-900">{stats.totalProducts}</div>
+                    <div className="text-3xl font-bold text-gray-900">{filteredStats.totalProducts}</div>
                   </div>
                 </div>
               </div>
@@ -233,7 +250,7 @@ export default function SellerDashboard() {
                   </div>
                   <div>
                     <div className="text-sm text-gray-600">Total Sales</div>
-                    <div className="text-3xl font-bold text-gray-900">{stats.totalSales}</div>
+                    <div className="text-3xl font-bold text-gray-900">{filteredStats.totalSales}</div>
                   </div>
                 </div>
               </div>
@@ -245,7 +262,7 @@ export default function SellerDashboard() {
                   </div>
                   <div>
                     <div className="text-sm text-gray-600">Remaining Stock</div>
-                    <div className="text-3xl font-bold text-gray-900">{stats.remaining}</div>
+                    <div className="text-3xl font-bold text-gray-900">{filteredStats.remaining}</div>
                   </div>
                 </div>
               </div>
@@ -257,10 +274,10 @@ export default function SellerDashboard() {
                 <h3 className="text-sm font-medium text-gray-700 mb-2">Sales by Product</h3>
                 <Bar
                   data={{
-                    labels: products.map(p => p.name || p.id),
+                    labels: filteredAndSorted.map(p => p.name || p.id),
                     datasets: [{
                       label: 'Sales',
-                      data: products.map(p => p.sales || 0),
+                      data: filteredAndSorted.map(p => p.sales || 0),
                       backgroundColor: 'rgba(34,197,94,0.6)'
                     }]
                   }}
@@ -276,11 +293,11 @@ export default function SellerDashboard() {
                 <h3 className="text-sm font-medium text-gray-700 mb-2">Stock Distribution</h3>
                 <Doughnut
                   data={{
-                    labels: products.map(p => p.name || p.id),
+                    labels: filteredAndSorted.map(p => p.name || p.id),
                     datasets: [{
                       label: 'Stock',
-                      data: products.map(p => Math.max((p.quantity || 0) - (p.sales || 0), 0)),
-                      backgroundColor: products.map((_, i) => `hsl(${(i * 50) % 360}, 70%, 55%)`)
+                      data: filteredAndSorted.map(p => Math.max((p.quantity || 0) - (p.sales || 0), 0)),
+                      backgroundColor: filteredAndSorted.map((_, i) => `hsl(${(i * 50) % 360}, 70%, 55%)`)
                     }]
                   }}
                   options={{ responsive: true, plugins: { legend: { position: 'bottom' } } }}
@@ -291,10 +308,10 @@ export default function SellerDashboard() {
                 <h3 className="text-sm font-medium text-gray-700 mb-2">Sales Trend</h3>
                 <Line
                   data={{
-                    labels: products.map(p => p.name || p.id),
+                    labels: filteredAndSorted.map(p => p.name || p.id),
                     datasets: [{
                       label: 'Cumulative Sales',
-                      data: products.map((p, idx) => products.slice(0, idx + 1).reduce((s, it) => s + (it.sales || 0), 0)),
+                      data: filteredAndSorted.map((p, idx) => filteredAndSorted.slice(0, idx + 1).reduce((s, it) => s + (it.sales || 0), 0)),
                       borderColor: 'rgba(34,197,94,0.9)',
                       backgroundColor: 'rgba(34,197,94,0.2)',
                       tension: 0.3

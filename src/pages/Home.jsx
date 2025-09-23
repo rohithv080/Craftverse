@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { db } from '../firebase/firebaseConfig'
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore'
+import { useToast } from '../contexts/ToastContext'
 
 // Animated counter hook
 function useAnimatedCounter(target, duration = 2000) {
@@ -33,6 +34,7 @@ function useAnimatedCounter(target, duration = 2000) {
 }
 
 export default function Home() {
+  const { show } = useToast()
   // Animated counters - all end at the same time
   const animatedSellers = useAnimatedCounter(1500, 3000)
   const animatedCustomers = useAnimatedCounter(15000, 3000)
@@ -41,6 +43,10 @@ export default function Home() {
   // New Arrivals state
   const [arrivals, setArrivals] = useState([])
   const [loadingArrivals, setLoadingArrivals] = useState(true)
+
+  // Newsletter state
+  const [email, setEmail] = useState('')
+  const [isSubscribing, setIsSubscribing] = useState(false)
 
   // Fetch New Arrivals
   useEffect(() => {
@@ -53,6 +59,37 @@ export default function Home() {
     })
     return () => unsub()
   }, [])
+
+  // Handle newsletter subscription
+  const handleNewsletterSubmit = async (e) => {
+    e.preventDefault()
+    
+    if (!email.trim()) {
+      show('Please enter a valid email address', { type: 'error' })
+      return
+    }
+
+    setIsSubscribing(true)
+    
+    try {
+      // Simulate API call for newsletter subscription
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      // Success feedback
+      show('🎉 Thank you for subscribing! You\'ll receive updates about new arrivals and offers.', { 
+        type: 'success',
+        duration: 5000 
+      })
+      
+      // Clear the form
+      setEmail('')
+      
+    } catch (error) {
+      show('Failed to subscribe. Please try again later.', { type: 'error' })
+    } finally {
+      setIsSubscribing(false)
+    }
+  }
 
   return (
     <div>
@@ -258,11 +295,32 @@ export default function Home() {
           <h3 className="text-2xl font-bold text-gray-900">Stay in the loop</h3>
           <p className="text-gray-600 mt-2">Join our newsletter to get updates about new arrivals and offers.</p>
           <form
-            onSubmit={(e)=>{ e.preventDefault(); alert('Thanks for subscribing!'); }}
+            onSubmit={handleNewsletterSubmit}
             className="mt-6 flex flex-col sm:flex-row gap-3 justify-center"
           >
-            <input type="email" required placeholder="Enter your email" className="w-full sm:w-96 px-3 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" />
-            <button className="btn-primary">Subscribe</button>
+            <input 
+              type="email" 
+              required 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email" 
+              className="w-full sm:w-96 px-3 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed" 
+              disabled={isSubscribing}
+            />
+            <button 
+              type="submit"
+              disabled={isSubscribing}
+              className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-w-[120px]"
+            >
+              {isSubscribing ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Subscribing...
+                </>
+              ) : (
+                'Subscribe'
+              )}
+            </button>
           </form>
         </div>
       </section>

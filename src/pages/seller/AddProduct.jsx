@@ -65,7 +65,6 @@ export default function AddProduct() {
       show('Product added successfully!')
       navigate('/seller/dashboard')
     } catch (err) {
-      console.error('Error adding product:', err)
       setError(err.message || 'Failed to add product')
       show(err.message || 'Failed to add product', 'error')
     } finally {

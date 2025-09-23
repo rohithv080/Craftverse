@@ -35,7 +35,7 @@ export default function Profile() {
         setProfile(prev => ({ ...prev, email: user.email || '' }))
       }
     } catch (error) {
-      console.error('Error loading profile:', error)
+      // Error loading profile, use default values
     } finally {
       setLoading(false)
     }
@@ -49,7 +49,7 @@ export default function Profile() {
       await updateDoc(docRef, profile)
       setIsEditing(false)
     } catch (error) {
-      console.error('Error saving profile:', error)
+      // Error saving profile, show error state
     } finally {
       setSaving(false)
     }

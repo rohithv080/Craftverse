@@ -67,7 +67,6 @@ export default function EditProduct() {
           imageUrl: productData.imageUrl || ''
         })
       } catch (err) {
-        console.error('Error loading product:', err)
         setError('Failed to load product data')
       } finally {
         setLoadingProduct(false)
@@ -114,7 +113,6 @@ export default function EditProduct() {
       show('Product updated successfully!')
       navigate('/seller/dashboard')
     } catch (err) {
-      console.error('Error updating product:', err)
       setError(err.message || 'Failed to update product')
       show(err.message || 'Failed to update product', 'error')
     } finally {

@@ -98,7 +98,7 @@ export default function Checkout() {
         updatedAt: serverTimestamp()
       }
 
-      await addDoc(collection(db, 'orders'), orderData)
+  const orderRef = await addDoc(collection(db, 'orders'), orderData)
 
       // Send email via EmailJS if environment variables are configured
       const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
@@ -123,8 +123,8 @@ export default function Checkout() {
       }
 
       // Clear cart after successful order
-      clearCart()
-      navigate('/buyer/order-confirmation', { state: { total: finalTotal, address: deliveryAddress } })
+  clearCart()
+  navigate('/buyer/order-confirmation', { state: { total: finalTotal, address: deliveryAddress, orderId: orderRef.id } })
     } catch (err) {
       setError(err.message || 'An error occurred while processing your order')
     } finally {

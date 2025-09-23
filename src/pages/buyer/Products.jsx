@@ -328,17 +328,9 @@ export default function Products() {
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
                 {searchTerm ? 'Search Results' : 'All Products'}
               </h2>
-              {/* Debug: Wishlist Test */}
-              <div className="mt-2 flex items-center gap-4 text-sm">
-                <span>Wishlist count: {wishlist.length}</span>
-                <button 
-                  onClick={() => console.log('Current wishlist:', wishlist)}
-                  className="px-3 py-1 bg-blue-100 text-blue-600 rounded"
-                >
-                  Debug Wishlist
-                </button>
-              </div>
-            </div>              {visible.length === 0 ? (
+            </div>
+            
+            {visible.length === 0 ? (
                 <div className="text-center py-16">
                   <div className="text-gray-500 text-xl mb-2">No products found</div>
                   <div className="text-gray-400">Try adjusting your search or filters</div>
@@ -363,21 +355,15 @@ export default function Products() {
                         try {
                           e.stopPropagation()
                           e.preventDefault()
-                          console.log('Heart clicked for product:', p.id, p.name)
-                          console.log('Current wishlist:', wishlist)
-                          console.log('addToWishlist function:', typeof addToWishlist)
-                          console.log('removeFromWishlist function:', typeof removeFromWishlist)
                           
                           const isInWishlist = wishlist.find(item => item.id === p.id)
                           if (isInWishlist) {
-                            console.log('Removing from wishlist')
                             removeFromWishlist(p.id)
                           } else {
-                            console.log('Adding to wishlist')
                             addToWishlist(p)
                           }
                         } catch (error) {
-                          console.error('Error in wishlist button:', error)
+                          // Handle error silently or show user-friendly message
                         }
                       }}
                       className="p-3 bg-white/90 backdrop-blur rounded-full shadow-lg hover:bg-white transition-all duration-200 hover:scale-110 z-10 relative"

@@ -3,12 +3,19 @@ import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestor
 import { db } from '../../firebase/firebaseConfig'
 import { useAuth } from '../../contexts/AuthContext'
 import { FaShoppingBag, FaEye, FaTruck, FaCheckCircle, FaTimesCircle, FaClock } from 'react-icons/fa'
+import { cancelOrder } from '../../services/ordersService'
+import { useToast } from '../../contexts/ToastContext'
+import ConfirmModal from '../../components/ConfirmModal'
 
 export default function OrderHistory() {
   const { user } = useAuth()
+  const { show } = useToast()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedOrder, setSelectedOrder] = useState(null)
+  const [cancellingId, setCancellingId] = useState(null)
+  const [showCancelModal, setShowCancelModal] = useState(false)
+  const [orderToCancel, setOrderToCancel] = useState(null)
 
   useEffect(() => {
     if (!user) {
@@ -32,7 +39,6 @@ export default function OrderHistory() {
         setLoading(false)
       },
       (error) => {
-        console.error('Error fetching orders:', error)
         setLoading(false)
       }
     )
@@ -84,6 +90,34 @@ export default function OrderHistory() {
       hour: '2-digit',
       minute: '2-digit'
     })
+  }
+
+  const canCancel = (status) => ['pending', 'confirmed'].includes((status || '').toLowerCase())
+
+  const onCancel = async (order) => {
+    if (!canCancel(order.status)) return
+    setOrderToCancel(order)
+    setShowCancelModal(true)
+  }
+
+  const handleConfirmCancel = async () => {
+    if (!orderToCancel) return
+    try {
+      setCancellingId(orderToCancel.id)
+      await cancelOrder(orderToCancel.id)
+      show('Order cancelled successfully', { type: 'success' })
+    } catch (err) {
+      show(err.message || 'Failed to cancel order', { type: 'error' })
+    } finally {
+      setCancellingId(null)
+      setShowCancelModal(false)
+      setOrderToCancel(null)
+    }
+  }
+
+  const handleCancelModalClose = () => {
+    setShowCancelModal(false)
+    setOrderToCancel(null)
   }
 
   if (loading) {
@@ -221,6 +255,44 @@ export default function OrderHistory() {
                           Buy Again
                         </button>
                       )}
+                      {canCancel(order.status) && (
+                        <button
+                          onClick={() => onCancel(order)}
+                          disabled={cancellingId === order.id}
+                          className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-all text-sm font-medium ${
+                            cancellingId === order.id
+                              ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                              : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
+                          }`}
+                        >
+                          {cancellingId === order.id ? (
+                            <svg
+                              role="status"
+                              className="w-4 h-4 text-gray-200 animate-spin dark:text-gray-600 fill-orange-600"
+                              viewBox="0 0 100 101"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M50 101C77.6142 101 101 77.6142 101 50C101 22.3858 77.6142 0 50 0C22.3858 0 0 22.3858 0 50C0 77.6142 22.3858 101 50 101Z"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="15"
+                              />
+                              <path
+                                d="M91.5 50C91.5 76.1421 76.1421 91.5 50 91.5C23.8579 91.5 8.5 76.1421 8.5 50C8.5 23.8579 23.8579 8.5 50 8.5C76.1421 8.5 91.5 23.8579 91.5 50Z"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="15"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="opacity-30"
+                              />
+                            </svg>
+                          ) : (
+                            'Cancel Order'
+                          )}
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -316,6 +388,18 @@ export default function OrderHistory() {
             </div>
           </div>
         )}
+
+        {/* Cancel Confirmation Modal */}
+        <ConfirmModal
+          isOpen={showCancelModal}
+          onClose={handleCancelModalClose}
+          onConfirm={handleConfirmCancel}
+          title="Cancel Order"
+          message={`Are you sure you want to cancel this order? The items will be restocked and this action cannot be undone.`}
+          confirmText="Yes, Cancel Order"
+          cancelText="Keep Order"
+          type="danger"
+        />
       </div>
     </div>
   )
