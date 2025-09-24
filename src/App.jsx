@@ -26,9 +26,6 @@ import { CartProvider } from "./contexts/CartContext.jsx";
 import { ToastProvider } from "./contexts/ToastContext.jsx";
 import { ThemeProvider } from "./contexts/ThemeContext.jsx";
 
-// ✅ Chatbot wrapper
-import Chatbot from "./components/chatbot.jsx";
-
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) {
@@ -160,9 +157,6 @@ function App() {
                   {/* Fallback route */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-
-                {/* ✅ Floating chatbot UI */}
-                <Chatbot />
               </div>
             </BrowserRouter>
           </ToastProvider>
