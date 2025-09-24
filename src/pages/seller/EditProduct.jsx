@@ -1,15 +1,16 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, Link, useParams } from 'react-router-dom'
 import { db, storage } from '../../firebase/firebaseConfig'
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useAuth } from '../../contexts/AuthContext'
 import { useToast } from '../../contexts/ToastContext'
-import { FaArrowLeft, FaUpload, FaPlus } from 'react-icons/fa'
+import { FaArrowLeft, FaUpload, FaSave } from 'react-icons/fa'
 
-export default function AddProduct() {
+export default function EditProduct() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const { id } = useParams()
   const [imageFile, setImageFile] = useState(null)
   const { show } = useToast()
   const [form, setForm] = useState({
@@ -23,26 +24,75 @@ export default function AddProduct() {
     price: '',
     description: '',
     lat: '',
-    lng: ''
+    lng: '',
+    imageUrl: ''
   })
   const [loading, setLoading] = useState(false)
+  const [loadingProduct, setLoadingProduct] = useState(true)
   const [error, setError] = useState('')
+
+  // Load existing product data
+  useEffect(() => {
+    if (!id || !user) return
+    
+    const loadProduct = async () => {
+      try {
+        const productDoc = await getDoc(doc(db, 'products', id))
+        if (!productDoc.exists()) {
+          setError('Product not found')
+          return
+        }
+        
+        const productData = productDoc.data()
+        
+        // Check if current user owns this product
+        if (productData.sellerId !== user.uid) {
+          setError('You can only edit your own products')
+          return
+        }
+        
+        // Populate form with existing data
+        setForm({
+          name: productData.name || '',
+          category: productData.category || '',
+          address: productData.address || '',
+          logistics: productData.logistics || 'self-pickup',
+          upiId: productData.upiId || '',
+          phone: productData.phone || '',
+          quantity: productData.quantity || 1,
+          price: productData.price || '',
+          description: productData.description || '',
+          lat: productData.location?.lat || '',
+          lng: productData.location?.lng || '',
+          imageUrl: productData.imageUrl || ''
+        })
+      } catch (err) {
+        setError('Failed to load product data')
+      } finally {
+        setLoadingProduct(false)
+      }
+    }
+    
+    loadProduct()
+  }, [id, user])
 
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
-    if (!imageFile) { setError('Please upload product image'); return }
+    
     try {
       setLoading(true)
-      const fileRef = ref(storage, `products/${user.uid}/${Date.now()}-${imageFile.name}`)
-      await uploadBytes(fileRef, imageFile)
-      const imageUrl = await getDownloadURL(fileRef)
+      let imageUrl = form.imageUrl // Keep existing image if no new image uploaded
       
-      // Add product to Firestore
-      await addDoc(collection(db, 'products'), {
-        sellerId: user.uid,
-        sellerName: user.name || user.email?.split('@')[0],
-        sellerEmail: user.email,
+      // Upload new image if selected
+      if (imageFile) {
+        const fileRef = ref(storage, `products/${user.uid}/${Date.now()}-${imageFile.name}`)
+        await uploadBytes(fileRef, imageFile)
+        imageUrl = await getDownloadURL(fileRef)
+      }
+      
+      // Update product in Firestore
+      await updateDoc(doc(db, 'products', id), {
         name: form.name,
         category: form.category,
         address: form.address,
@@ -57,19 +107,45 @@ export default function AddProduct() {
           lat: form.lat ? Number(form.lat) : null,
           lng: form.lng ? Number(form.lng) : null
         },
-        createdAt: serverTimestamp(),
-        sales: 0,
-        status: 'active'
+        updatedAt: serverTimestamp()
       })
       
-      show('Product added successfully!')
+      show('Product updated successfully!')
       navigate('/seller/dashboard')
     } catch (err) {
-      setError(err.message || 'Failed to add product')
-      show(err.message || 'Failed to add product', 'error')
+      setError(err.message || 'Failed to update product')
+      show(err.message || 'Failed to update product', 'error')
     } finally {
       setLoading(false)
     }
+  }
+
+  if (loadingProduct) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading product data...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error && !form.name) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-600 text-lg font-medium mb-4">{error}</div>
+          <Link 
+            to="/seller/dashboard" 
+            className="inline-flex items-center gap-2 text-orange-600 hover:text-orange-700"
+          >
+            <FaArrowLeft className="text-sm" />
+            Back to Dashboard
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -84,8 +160,8 @@ export default function AddProduct() {
             <FaArrowLeft className="text-sm" />
             Back to Dashboard
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Add New Product</h1>
-          <p className="text-gray-600 mt-2">Create a new product listing for your customers</p>
+          <h1 className="text-3xl font-bold text-gray-900">Edit Product</h1>
+          <p className="text-gray-600 mt-2">Update your product listing details</p>
         </div>
 
         {/* Form */}
@@ -99,7 +175,17 @@ export default function AddProduct() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Image Upload */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Product Image *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
+              {form.imageUrl && !imageFile && (
+                <div className="mb-4">
+                  <img 
+                    src={form.imageUrl} 
+                    alt="Current product" 
+                    className="h-32 w-32 object-cover rounded-lg border border-gray-200"
+                  />
+                  <p className="text-sm text-gray-500 mt-2">Current image (upload a new one to replace)</p>
+                </div>
+              )}
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-orange-400 transition-colors">
                 <input 
                   type="file" 
@@ -107,7 +193,6 @@ export default function AddProduct() {
                   onChange={(e)=>setImageFile(e.target.files?.[0] || null)} 
                   className="hidden" 
                   id="image-upload"
-                  required 
                 />
                 <label htmlFor="image-upload" className="cursor-pointer">
                   <FaUpload className="text-3xl text-gray-400 mx-auto mb-2" />
@@ -116,11 +201,11 @@ export default function AddProduct() {
                       <span className="text-orange-600 font-medium">{imageFile.name}</span>
                     ) : (
                       <>
-                        <span className="font-medium text-orange-600">Click to upload</span> or drag and drop
+                        <span className="font-medium text-orange-600">Click to upload new image</span> or drag and drop
                       </>
                     )}
                   </div>
-                  <p className="text-sm text-gray-500 mt-1">PNG, JPG, GIF up to 10MB</p>
+                  <p className="text-sm text-gray-500 mt-1">PNG, JPG, GIF up to 10MB (optional)</p>
                 </label>
               </div>
             </div>
@@ -186,7 +271,7 @@ export default function AddProduct() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Quantity Available *</label>
                 <input 
                   type="number" 
-                  min="1" 
+                  min="0" 
                   value={form.quantity} 
                   onChange={(e)=>setForm({...form, quantity:e.target.value})} 
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent" 
@@ -256,12 +341,12 @@ export default function AddProduct() {
                 {loading ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    Adding Product...
+                    Updating Product...
                   </>
                 ) : (
                   <>
-                    <FaPlus />
-                    Add New Product
+                    <FaSave />
+                    Update Product
                   </>
                 )}
               </button>
@@ -272,5 +357,3 @@ export default function AddProduct() {
     </div>
   )
 }
-
-

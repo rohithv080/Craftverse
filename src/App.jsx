@@ -5,6 +5,7 @@ import Login from "./pages/auth/Login.jsx";
 import Signup from "./pages/auth/Signup.jsx";
 import RoleSelect from "./pages/RoleSelect.jsx";
 import AddProduct from "./pages/seller/AddProduct.jsx";
+import EditProduct from "./pages/seller/EditProduct.jsx";
 import SellerDashboard from "./pages/seller/Dashboard.jsx";
 import Products from "./pages/buyer/Products.jsx";
 import Cart from "./pages/buyer/Cart.jsx";
@@ -23,7 +24,7 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext.jsx";
 import { CartProvider } from "./contexts/CartContext.jsx";
 import { ToastProvider } from "./contexts/ToastContext.jsx";
 import { ThemeProvider } from "./contexts/ThemeContext.jsx";
-import Chatbot from "./components/chatbot.jsx";
+
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) {
@@ -59,19 +60,89 @@ function App() {
                     <Route path="/help" element={<HelpCenter />} />
                     <Route path="/returns" element={<Returns />} />
                     <Route path="/shipping" element={<Shipping />} />
-                    <Route path="/seller/add" element={<ProtectedRoute><AddProduct /></ProtectedRoute>}/>
-                    <Route path="/seller/dashboard" element={<ProtectedRoute><SellerDashboard /></ProtectedRoute>}/>
-                    <Route path="/buyer/products" element={<ProtectedRoute><Products /></ProtectedRoute>}/>
-                    <Route path="/buyer/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>}/>
-                    <Route path="/buyer/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>}/>
-                    <Route path="/buyer/order-confirmation" element={<ProtectedRoute><OrderConfirmation /></ProtectedRoute>}/>
-                    <Route path="/buyer/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>}/>
-                  <Route path="/buyer/orders" element={<ProtectedRoute><OrderHistory /></ProtectedRoute>}/>
-                  <Route path="/buyer/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>}/>
+                    <Route
+                      path="/seller/add"
+                      element={
+                        <ProtectedRoute>
+                          <AddProduct />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/seller/edit/:id"
+                      element={
+                        <ProtectedRoute>
+                          <EditProduct />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/seller/dashboard"
+                      element={
+                        <ProtectedRoute>
+                          <SellerDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/buyer/products"
+                      element={
+                        <ProtectedRoute>
+                          <Products />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/buyer/cart"
+                      element={
+                        <ProtectedRoute>
+                          <Cart />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/buyer/checkout"
+                      element={
+                        <ProtectedRoute>
+                          <Checkout />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/buyer/order-confirmation"
+                      element={
+                        <ProtectedRoute>
+                          <OrderConfirmation />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/buyer/profile"
+                      element={
+                        <ProtectedRoute>
+                          <Profile />
+                        </ProtectedRoute>
+                      }
+                    />
+                  <Route
+                    path="/buyer/orders"
+                    element={
+                      <ProtectedRoute>
+                        <OrderHistory />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/buyer/wishlist"
+                    element={
+                      <ProtectedRoute>
+                        <Wishlist />
+                      </ProtectedRoute>
+                    }
+                  />
                 </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-                <Chatbot />
               </div>
             </BrowserRouter>
           </ToastProvider>

@@ -21,7 +21,7 @@ export function AuthProvider({ children }) {
             setUser(u)
           }
         } catch (error) {
-          console.error('Error fetching user data:', error)
+          // Failed to fetch user data, use basic user info
           setUser(u)
         }
       } else {
@@ -68,10 +68,8 @@ export function AuthProvider({ children }) {
       // Update local user state
       setUser(prev => ({ ...prev, role, isNewUser: false }))
       
-      console.log('User role updated successfully:', role)
       return true
     } catch (error) {
-      console.error('Error setting user role:', error)
       throw error
     }
   }

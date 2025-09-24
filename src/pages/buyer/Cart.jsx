@@ -7,7 +7,7 @@ export default function Cart() {
 
   const total = items.reduce((s, it) => s + it.price * it.qty, 0)
   const subtotal = total
-  const deliveryFee = items.length > 0 ? 40 : 0
+  const deliveryFee = items.length > 0 && subtotal < 500 ? 40 : 0
   const finalTotal = subtotal + deliveryFee
 
   return (

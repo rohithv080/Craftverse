@@ -1,10 +1,53 @@
+import { useEffect, useState } from 'react'
 import { useLocation, Link } from 'react-router-dom'
-import { FaCheckCircle, FaHome, FaShoppingBag, FaTruck, FaCreditCard } from 'react-icons/fa'
+import { FaCheckCircle, FaHome, FaShoppingBag, FaTruck } from 'react-icons/fa'
+import { doc, onSnapshot } from 'firebase/firestore'
+import { db } from '../../firebase/firebaseConfig'
+import { cancelOrder } from '../../services/ordersService'
+import { useToast } from '../../contexts/ToastContext'
+import ConfirmModal from '../../components/ConfirmModal'
 
 export default function OrderConfirmation() {
   const loc = useLocation()
   const total = loc.state?.total
   const address = loc.state?.address
+  const orderId = loc.state?.orderId
+  const { show } = useToast()
+  const [status, setStatus] = useState('pending')
+  const [isCancelling, setIsCancelling] = useState(false)
+  const [showCancelModal, setShowCancelModal] = useState(false)
+
+  useEffect(() => {
+    if (!orderId) return
+    const unsub = onSnapshot(doc(db, 'orders', orderId), (snap) => {
+      if (snap.exists()) {
+        const data = snap.data()
+        setStatus(data.status || 'pending')
+      }
+    })
+    return () => unsub()
+  }, [orderId])
+
+  const canCancel = status === 'pending' || status === 'confirmed'
+
+  async function handleCancel() {
+    if (!orderId) return
+    if (!canCancel) return
+    setShowCancelModal(true)
+  }
+
+  async function handleConfirmCancel() {
+    try {
+      setIsCancelling(true)
+      await cancelOrder(orderId)
+      show('Order cancelled successfully', { type: 'success' })
+    } catch (err) {
+      show(err.message || 'Failed to cancel order', { type: 'error' })
+    } finally {
+      setIsCancelling(false)
+      setShowCancelModal(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -32,13 +75,13 @@ export default function OrderConfirmation() {
                 <span className="font-semibold text-gray-900">₹{total}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Payment Method:</span>
-                <span className="font-medium text-gray-900">Cash on Delivery</span>
+                <span className="text-gray-600">Order ID:</span>
+                <span className="font-mono text-gray-900 text-sm">{orderId || 'N/A'}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-gray-600">Order Status:</span>
-                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                  Confirmed
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${status === 'cancelled' ? 'bg-red-100 text-red-800' : status === 'delivered' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -98,7 +141,7 @@ export default function OrderConfirmation() {
         </div>
 
         {/* Action Buttons */}
-        <div className="text-center mt-8 space-x-4">
+        <div className="text-center mt-8 flex flex-col md:flex-row items-center justify-center gap-4">
           <Link 
             to="/buyer/products" 
             className="inline-flex items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600 transition-colors font-medium"
@@ -106,7 +149,17 @@ export default function OrderConfirmation() {
             <FaShoppingBag />
             Continue Shopping
           </Link>
-          
+          {orderId && (
+            <button
+              disabled={!canCancel || isCancelling}
+              onClick={handleCancel}
+              className={`inline-flex items-center gap-2 px-6 py-3 rounded-lg transition-colors font-medium border ${canCancel ? 'border-red-300 text-red-600 hover:bg-red-50' : 'border-gray-200 text-gray-400 cursor-not-allowed'}`}
+              title={canCancel ? 'Cancel this order' : 'Order can no longer be cancelled'}
+            >
+              {isCancelling ? 'Cancelling…' : 'Cancel Order'}
+            </button>
+          )}
+
           <Link 
             to="/" 
             className="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium"
@@ -121,6 +174,18 @@ export default function OrderConfirmation() {
           <p>A confirmation email has been sent to your registered email address.</p>
           <p className="mt-2">If you have any questions, please contact our customer support.</p>
         </div>
+
+        {/* Cancel Confirmation Modal */}
+        <ConfirmModal
+          isOpen={showCancelModal}
+          onClose={() => setShowCancelModal(false)}
+          onConfirm={handleConfirmCancel}
+          title="Cancel Order"
+          message="Are you sure you want to cancel this order? The items will be restocked and this action cannot be undone."
+          confirmText="Yes, Cancel Order"
+          cancelText="Keep Order"
+          type="danger"
+        />
       </div>
     </div>
   )

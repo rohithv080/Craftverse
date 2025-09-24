@@ -37,7 +37,6 @@ export default function RoleSelect() {
       }
       
     } catch (error) {
-      console.error('Error setting role:', error)
       alert('Failed to set role. Please try again.')
       setRoleLoading(false)
       setSelectedRole(null)

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { db } from '../firebase/firebaseConfig'
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore'
+import { useToast } from '../contexts/ToastContext'
 
 // Animated counter hook
 function useAnimatedCounter(target, duration = 2000) {
@@ -33,15 +34,23 @@ function useAnimatedCounter(target, duration = 2000) {
 }
 
 export default function Home() {
-  const [arrivals, setArrivals] = useState([])
-  const [loadingArrivals, setLoadingArrivals] = useState(true)
-  
+  const { show } = useToast()
   // Animated counters - all end at the same time
   const animatedSellers = useAnimatedCounter(1500, 3000)
   const animatedCustomers = useAnimatedCounter(15000, 3000)
   const animatedProducts = useAnimatedCounter(10000, 3000)
+
+  // New Arrivals state
+  const [arrivals, setArrivals] = useState([])
+  const [loadingArrivals, setLoadingArrivals] = useState(true)
+
+  // Newsletter state
+  const [email, setEmail] = useState('')
+  const [isSubscribing, setIsSubscribing] = useState(false)
+
+  // Fetch New Arrivals
   useEffect(() => {
-    const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'), limit(8))
+    const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'), limit(6))
     const unsub = onSnapshot(q, (snap) => {
       const list = []
       snap.forEach(d => list.push({ id: d.id, ...d.data() }))
@@ -50,6 +59,37 @@ export default function Home() {
     })
     return () => unsub()
   }, [])
+
+  // Handle newsletter subscription
+  const handleNewsletterSubmit = async (e) => {
+    e.preventDefault()
+    
+    if (!email.trim()) {
+      show('Please enter a valid email address', { type: 'error' })
+      return
+    }
+
+    setIsSubscribing(true)
+    
+    try {
+      // Simulate API call for newsletter subscription
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      // Success feedback
+      show('🎉 Thank you for subscribing! You\'ll receive updates about new arrivals and offers.', { 
+        type: 'success',
+        duration: 5000 
+      })
+      
+      // Clear the form
+      setEmail('')
+      
+    } catch (error) {
+      show('Failed to subscribe. Please try again later.', { type: 'error' })
+    } finally {
+      setIsSubscribing(false)
+    }
+  }
 
   return (
     <div>
@@ -139,64 +179,24 @@ export default function Home() {
         </div>
       </section>
 
-      {/* New Arrivals */}
-      {loadingArrivals ? (
-        <section className="bg-white">
-          <div className="max-w-7xl mx-auto px-4 py-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">New Arrivals</h2>
-              <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="card overflow-hidden">
-                  <div className="h-40 w-full bg-gray-200 animate-pulse" />
-                  <div className="p-4 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
-                    <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : arrivals.length > 0 && (
-        <section className="bg-white">
-          <div className="max-w-7xl mx-auto px-4 py-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">New Arrivals</h2>
-              <Link to="/buyer/products" className="text-sm font-medium text-orange-600">Browse all</Link>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-              {arrivals.map(p => (
-                <Link key={p.id} to={`/buyer/products?search=${encodeURIComponent(p.name || '')}`} className="group card overflow-hidden hover:shadow-md transition-shadow">
-                  <img src={p.imageUrl} alt={p.name} className="h-40 w-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
-                  <div className="p-4">
-                    <div className="font-semibold text-gray-900 truncate">{p.name}</div>
-                    <div className="text-orange-600 font-bold mt-1">₹{p.price}</div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Featured Categories */}
-      <section className="bg-stone-50">
+      {/* Featured Categories Section */}
+      <section className="bg-white">
         <div className="max-w-7xl mx-auto px-4 py-12">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Featured Categories</h2>
-            <Link to="/buyer/products" className="text-sm font-medium text-orange-600">View all</Link>
           </div>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               { title: 'Fashion', local: '/categories/fashion.jpg', fallback: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1200&auto=format&fit=crop' },
               { title: 'Gifts', local: '/categories/gifts.jpg', fallback: 'https://images.unsplash.com/photo-1512909006721-3d6018887383?q=80&w=1200&auto=format&fit=crop' },
               { title: 'Home & Living', local: '/categories/home.jpg', fallback: 'https://images.unsplash.com/photo-1493666438817-866a91353ca9?q=80&w=1600&auto=format&fit=crop' },
-              { title: 'Stationery', local: '/categories/stationery.jpg', fallback: 'https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1600&auto=format&fit=crop' },
+              { title: 'Pottery Items', local: '/categories/pottery.jpg', fallback: 'https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1600&auto=format&fit=crop' },
             ].map(c => (
-              <Link key={c.title} to={`/buyer/products?category=${encodeURIComponent(c.title)}`} className="group relative overflow-hidden rounded-2xl shadow-sm border border-stone-200">
+              <Link 
+                key={c.title} 
+                to={`/buyer/products?category=${encodeURIComponent(c.title)}`}
+                className="group relative overflow-hidden rounded-2xl shadow-sm border border-stone-200 hover:shadow-lg transition-all duration-300"
+              >
                 <img 
                   src={c.local}
                   onError={(e)=>{ e.currentTarget.onerror=null; e.currentTarget.src=c.fallback; }}
@@ -213,17 +213,114 @@ export default function Home() {
         </div>
       </section>
 
+      {/* New Arrivals Section */}
+      <section className="bg-stone-50">
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          {loadingArrivals ? (
+            <div>
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">New Arrivals</h2>
+                <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="card overflow-hidden">
+                    <div className="h-48 w-full bg-gray-200 animate-pulse" />
+                    <div className="p-4 space-y-3">
+                      <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
+                      <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : arrivals.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">New Arrivals</h2>
+                <Link to="/buyer/products" className="text-orange-600 hover:text-orange-700 font-medium">
+                  View All →
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {arrivals.map(p => (
+                  <Link 
+                    key={p.id} 
+                    to={`/buyer/products?search=${encodeURIComponent(p.name || '')}`}
+                    className="group card overflow-hidden hover:shadow-lg transition-all duration-300"
+                  >
+                    <div className="relative overflow-hidden">
+                      <img 
+                        src={p.imageUrl} 
+                        alt={p.name} 
+                        className="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                        loading="lazy" 
+                      />
+                      <div className="absolute top-3 left-3">
+                        <span className="inline-block px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full">
+                          New
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-semibold text-gray-900 truncate mb-2">{p.name}</h3>
+                      <div className="text-orange-600 font-bold text-lg mb-3">₹{p.price}</div>
+                      <div>
+                        {p.quantity === 0 ? (
+                          <span className="inline-block px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                            Out of Stock
+                          </span>
+                        ) : p.quantity <= 5 ? (
+                          <span className="inline-block px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
+                            Only {p.quantity} left
+                          </span>
+                        ) : (
+                          <span className="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                            In Stock
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Newsletter */}
       <section className="bg-white">
         <div className="max-w-3xl mx-auto px-4 py-12 text-center">
           <h3 className="text-2xl font-bold text-gray-900">Stay in the loop</h3>
           <p className="text-gray-600 mt-2">Join our newsletter to get updates about new arrivals and offers.</p>
           <form
-            onSubmit={(e)=>{ e.preventDefault(); alert('Thanks for subscribing!'); }}
+            onSubmit={handleNewsletterSubmit}
             className="mt-6 flex flex-col sm:flex-row gap-3 justify-center"
           >
-            <input type="email" required placeholder="Enter your email" className="w-full sm:w-96 px-3 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent" />
-            <button className="btn-primary">Subscribe</button>
+            <input 
+              type="email" 
+              required 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email" 
+              className="w-full sm:w-96 px-3 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed" 
+              disabled={isSubscribing}
+            />
+            <button 
+              type="submit"
+              disabled={isSubscribing}
+              className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-w-[120px]"
+            >
+              {isSubscribing ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Subscribing...
+                </>
+              ) : (
+                'Subscribe'
+              )}
+            </button>
           </form>
         </div>
       </section>
