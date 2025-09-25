@@ -23,7 +23,6 @@ import HelpCenter from "./pages/HelpCenter.jsx";
 import Returns from "./pages/Returns.jsx";
 import Shipping from "./pages/Shipping.jsx";
 import NotFound from "./pages/NotFound.jsx";
-
 import { AuthProvider, useAuth } from "./contexts/AuthContext.jsx";
 import { CartProvider } from "./contexts/CartContext.jsx";
 import { ToastProvider } from "./contexts/ToastContext.jsx";
@@ -40,7 +39,6 @@ function ProtectedRoute({ children }) {
   }
   return user ? children : <Navigate to="/auth/login" replace />;
 }
-
 function App() {
   // Initialize AOS (Animate On Scroll)
   useEffect(() => {
@@ -75,21 +73,11 @@ function App() {
               <div className="min-h-screen relative">
                 {/* App Routes */}
                 <Routes>
-
                   {/* Auth routes - no layout */}
                   <Route path="/auth/login" element={<Login />} />
                   <Route path="/auth/signup" element={<Signup />} />
-
                   {/* Role selection - no layout */}
-                  <Route
-                    path="/role-select"
-                    element={
-                      <ProtectedRoute>
-                        <RoleSelect />
-                      </ProtectedRoute>
-                    }
-                  />
-
+                  <Route path="/role-select" element={<ProtectedRoute><RoleSelect /></ProtectedRoute>}/>
                   {/* Public routes with layout */}
                   <Route element={<Layout />}>
                     <Route index element={<Home />} />
@@ -180,8 +168,6 @@ function App() {
                     }
                   />
                 </Route>
-
-                  {/* Fallback route */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </div>
@@ -192,5 +178,4 @@ function App() {
     </ThemeProvider>
   );  
 }
-
 export default App;
