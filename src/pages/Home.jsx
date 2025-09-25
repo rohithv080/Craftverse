@@ -35,6 +35,16 @@ function useAnimatedCounter(target, duration = 2000) {
 
 export default function Home() {
   const { show } = useToast()
+  
+  // Test AOS on component mount
+  useEffect(() => {
+    // Import AOS dynamically and refresh
+    import('aos').then(AOS => {
+      AOS.default.refresh();
+      console.log('🔄 AOS refreshed from Home component');
+    });
+  }, []);
+  
   // Animated counters - all end at the same time
   const animatedSellers = useAnimatedCounter(1500, 3000)
   const animatedCustomers = useAnimatedCounter(15000, 3000)
@@ -97,30 +107,30 @@ export default function Home() {
       <section className="relative overflow-hidden" style={{ background: 'linear-gradient(135deg,#ffedd5,#fecaca)' }}>
         <div className="max-w-7xl mx-auto px-4 py-16 md:py-24">
           <div className="grid md:grid-cols-2 gap-10 items-center">
-            <div>
-              <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold mb-4 bg-orange-100 text-orange-700">Welcome to</div>
-              <h1 className="text-4xl md:text-6xl font-extrabold leading-tight text-gray-900">KAITHIRAN</h1>
-              <p className="mt-4 text-gray-700 md:text-lg">A marketplace for artisans. Discover authentic, unique, and handcrafted products made with love.</p>
-              <div className="mt-6 flex gap-3">
+            <div data-aos="fade-right" data-aos-duration="1000">
+              <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold mb-4 bg-orange-100 text-orange-700" data-aos="fade-up" data-aos-delay="200">Welcome to</div>
+              <h1 className="text-4xl md:text-6xl font-extrabold leading-tight text-gray-900" data-aos="fade-up" data-aos-delay="400">KAITHIRAN</h1>
+              <p className="mt-4 text-gray-700 md:text-lg" data-aos="fade-up" data-aos-delay="600">A marketplace for artisans. Discover authentic, unique, and handcrafted products made with love.</p>
+              <div className="mt-6 flex gap-3" data-aos="fade-up" data-aos-delay="800">
                 <Link to="/buyer/products" className="btn-primary">Shop Now</Link>
                 <Link to="/seller/dashboard" className="btn-secondary">Sell on Kaithiran</Link>
               </div>
-              <div className="mt-8 grid grid-cols-3 gap-4 text-center">
-                <div className="card p-4">
+              <div className="mt-8 grid grid-cols-3 gap-4 text-center" data-aos="fade-up" data-aos-delay="1000">
+                <div className="card p-4" data-aos="zoom-in" data-aos-delay="1200">
                   <div className="text-2xl font-bold text-gray-900">{animatedSellers.toLocaleString()}+</div>
                   <div className="text-sm text-gray-600">Verified Sellers</div>
                 </div>
-                <div className="card p-4">
+                <div className="card p-4" data-aos="zoom-in" data-aos-delay="1400">
                   <div className="text-2xl font-bold text-gray-900">{animatedCustomers.toLocaleString()}+</div>
                   <div className="text-sm text-gray-600">Happy Customers</div>
                 </div>
-                <div className="card p-4">
+                <div className="card p-4" data-aos="zoom-in" data-aos-delay="1600">
                   <div className="text-2xl font-bold text-gray-900">{animatedProducts.toLocaleString()}+</div>
                   <div className="text-sm text-gray-600">Unique Products</div>
                 </div>
               </div>
             </div>
-            <div className="relative">
+            <div className="relative" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
               <div className="rounded-3xl shadow-xl overflow-hidden border border-stone-200">
                 <img src="/hero.png" alt="Kaithiran hero" className="w-full h-80 md:h-[420px] object-cover" />
               </div>
@@ -140,15 +150,15 @@ export default function Home() {
       {/* Feature Bar + Role CTA */}
       <section className="bg-white">
         <div className="max-w-7xl mx-auto px-4 py-8 grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="card p-5 text-center">
+          <div className="card p-5 text-center" data-aos="fade-up" data-aos-delay="100">
             <div className="text-lg font-semibold text-gray-900">Fast Secure Payments</div>
             <div className="text-sm text-gray-600">Your transactions are protected</div>
           </div>
-          <div className="card p-5 text-center">
+          <div className="card p-5 text-center" data-aos="fade-up" data-aos-delay="200">
             <div className="text-lg font-semibold text-gray-900">Authentic & Unique Products</div>
             <div className="text-sm text-gray-600">Curated by Kaithiran</div>
           </div>
-          <div className="card p-5 text-center md:col-span-1 sm:col-span-2 md:col-auto">
+          <div className="card p-5 text-center md:col-span-1 sm:col-span-2 md:col-auto" data-aos="fade-up" data-aos-delay="300">
             <div className="text-lg font-semibold text-gray-900">Free & Fast Delivery</div>
             <div className="text-sm text-gray-600">On eligible orders</div>
           </div>
@@ -156,9 +166,9 @@ export default function Home() {
 
         {/* Role shortcuts */}
         <div className="max-w-7xl mx-auto px-4 pb-8 grid md:grid-cols-2 gap-6">
-          <div className="card p-6">
+          <div className="card p-6" data-aos="slide-right" data-aos-delay="100">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">🧑‍💼</div>
+              <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center" data-aos="bounce" data-aos-delay="400">🧑‍💼</div>
               <div className="flex-1">
                 <div className="text-lg font-semibold text-gray-900 mb-1">I'm a Seller</div>
                 <div className="text-gray-600 text-sm mb-3">Create listings, manage inventory, and track sales.</div>
@@ -166,9 +176,9 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="card p-6">
+          <div className="card p-6" data-aos="slide-left" data-aos-delay="200">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">🛍️</div>
+              <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center" data-aos="bounce" data-aos-delay="500">🛍️</div>
               <div className="flex-1">
                 <div className="text-lg font-semibold text-gray-900 mb-1">I'm a Buyer</div>
                 <div className="text-gray-600 text-sm mb-3">Discover amazing products from local sellers.</div>
@@ -183,7 +193,7 @@ export default function Home() {
       <section className="bg-white">
         <div className="max-w-7xl mx-auto px-4 py-12">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Featured Categories</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900" data-aos="fade-up">Featured Categories</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
@@ -191,11 +201,13 @@ export default function Home() {
               { title: 'Gifts', local: '/categories/gifts.jpg', fallback: 'https://images.unsplash.com/photo-1512909006721-3d6018887383?q=80&w=1200&auto=format&fit=crop' },
               { title: 'Home & Living', local: '/categories/home.jpg', fallback: 'https://images.unsplash.com/photo-1493666438817-866a91353ca9?q=80&w=1600&auto=format&fit=crop' },
               { title: 'Pottery Items', local: '/categories/pottery.jpg', fallback: 'https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1600&auto=format&fit=crop' },
-            ].map(c => (
+            ].map((c, index) => (
               <Link 
                 key={c.title} 
                 to={`/buyer/products?category=${encodeURIComponent(c.title)}`}
                 className="group relative overflow-hidden rounded-2xl shadow-sm border border-stone-200 hover:shadow-lg transition-all duration-300"
+                data-aos="zoom-in" 
+                data-aos-delay={100 + (index * 100)}
               >
                 <img 
                   src={c.local}
@@ -219,12 +231,12 @@ export default function Home() {
           {loadingArrivals ? (
             <div>
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">New Arrivals</h2>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900" data-aos="fade-up">New Arrivals</h2>
                 <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="card overflow-hidden">
+                  <div key={i} className="card overflow-hidden" data-aos="fade-up" data-aos-delay={100 + (i * 100)}>
                     <div className="h-48 w-full bg-gray-200 animate-pulse" />
                     <div className="p-4 space-y-3">
                       <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
@@ -237,17 +249,19 @@ export default function Home() {
           ) : arrivals.length > 0 && (
             <div>
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">New Arrivals</h2>
-                <Link to="/buyer/products" className="text-orange-600 hover:text-orange-700 font-medium">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900" data-aos="fade-up">New Arrivals</h2>
+                <Link to="/buyer/products" className="text-orange-600 hover:text-orange-700 font-medium" data-aos="fade-left" data-aos-delay="100">
                   View All →
                 </Link>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {arrivals.map(p => (
+                {arrivals.map((p, index) => (
                   <Link 
                     key={p.id} 
                     to={`/buyer/products?search=${encodeURIComponent(p.name || '')}`}
                     className="group card overflow-hidden hover:shadow-lg transition-all duration-300"
+                    data-aos="fade-up" 
+                    data-aos-delay={100 + (index * 100)}
                   >
                     <div className="relative overflow-hidden">
                       <img 
@@ -292,11 +306,13 @@ export default function Home() {
       {/* Newsletter */}
       <section className="bg-white">
         <div className="max-w-3xl mx-auto px-4 py-12 text-center">
-          <h3 className="text-2xl font-bold text-gray-900">Stay in the loop</h3>
-          <p className="text-gray-600 mt-2">Join our newsletter to get updates about new arrivals and offers.</p>
+          <h3 className="text-2xl font-bold text-gray-900" data-aos="fade-up">Stay in the loop</h3>
+          <p className="text-gray-600 mt-2" data-aos="fade-up" data-aos-delay="100">Join our newsletter to get updates about new arrivals and offers.</p>
           <form
             onSubmit={handleNewsletterSubmit}
             className="mt-6 flex flex-col sm:flex-row gap-3 justify-center"
+            data-aos="fade-up" 
+            data-aos-delay="200"
           >
             <input 
               type="email" 
@@ -328,14 +344,14 @@ export default function Home() {
       {/* Testimonials */}
       <section className="bg-stone-50">
         <div className="max-w-7xl mx-auto px-4 py-12">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">What customers say</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6" data-aos="fade-up">What customers say</h2>
           <div className="grid md:grid-cols-3 gap-5">
             {[ 
               { name: 'Anjali', text: 'Beautiful products and quick delivery. Love supporting local artisans!', rating: 5 },
               { name: 'Rahul', text: 'Quality is excellent. The marketplace is easy to use and trustworthy.', rating: 5 },
               { name: 'Meera', text: 'Found unique gifts I couldn\'t find elsewhere. Highly recommended!', rating: 4 },
-            ].map(t => (
-              <div key={t.name} className="card p-5">
+            ].map((t, index) => (
+              <div key={t.name} className="card p-5" data-aos="flip-up" data-aos-delay={100 + (index * 150)}>
                 <div className="text-orange-500 mb-2">{'★'.repeat(t.rating)}{'☆'.repeat(5 - t.rating)}</div>
                 <p className="text-gray-700">{t.text}</p>
                 <div className="mt-3 text-sm text-gray-500">— {t.name}</div>

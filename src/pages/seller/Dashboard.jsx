@@ -161,12 +161,14 @@ export default function SellerDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Seller Dashboard</h1>
-            <p className="text-gray-600 mt-2">Manage your products and track your business</p>
+            <h1 className="text-3xl font-bold text-gray-900" data-aos="fade-right">Seller Dashboard</h1>
+            <p className="text-gray-600 mt-2" data-aos="fade-right" data-aos-delay="100">Manage your products and track your business</p>
           </div>
           <Link 
             to="/seller/add" 
             className="bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600 transition-colors font-medium flex items-center gap-2"
+            data-aos="fade-left" 
+            data-aos-delay="200"
           >
             <FaPlus />
             Add New Product
@@ -231,7 +233,7 @@ export default function SellerDashboard() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200" data-aos="zoom-in" data-aos-delay="100">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                     <FaBox className="text-2xl text-blue-500" />
@@ -243,7 +245,7 @@ export default function SellerDashboard() {
                 </div>
               </div>
               
-              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200" data-aos="zoom-in" data-aos-delay="200">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                     <FaChartLine className="text-2xl text-green-500" />
@@ -255,7 +257,7 @@ export default function SellerDashboard() {
                 </div>
               </div>
               
-              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200" data-aos="zoom-in" data-aos-delay="300">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                     <FaBoxes className="text-2xl text-orange-500" />

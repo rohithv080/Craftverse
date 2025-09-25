@@ -1,4 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect } from "react";
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 import "./index.css";
 import Layout from "./components/Layout.jsx";
 import Login from "./pages/auth/Login.jsx";
@@ -39,6 +42,30 @@ function ProtectedRoute({ children }) {
 }
 
 function App() {
+  // Initialize AOS (Animate On Scroll)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      AOS.init({
+        duration: 800,
+        offset: 100,
+        easing: 'ease-in-out',
+        once: true,
+        mirror: false,
+        disable: false,
+        startEvent: 'DOMContentLoaded'
+      });
+      console.log('🎬 AOS (Animate On Scroll) initialized!');
+      
+      // Force refresh after a short delay
+      setTimeout(() => {
+        AOS.refresh();
+        console.log('🔄 AOS refreshed');
+      }, 100);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <ThemeProvider>
       <AuthProvider>
