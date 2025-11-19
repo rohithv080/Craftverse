@@ -107,9 +107,9 @@ export default function Products() {
       <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
         <div className="max-w-8xl mx-auto px-6 py-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold mb-2">Discover Amazing Products</h1>
-            <p className="text-xl text-orange-100 mb-4">Find everything you need at unbeatable prices</p>
-            <div className="flex items-center justify-center gap-4 text-sm">
+            <h1 className="text-4xl font-bold mb-2" data-aos="fade-up">Discover Amazing Products</h1>
+            <p className="text-xl text-orange-100 mb-4" data-aos="fade-up" data-aos-delay="100">Find everything you need at unbeatable prices</p>
+            <div className="flex items-center justify-center gap-4 text-sm" data-aos="fade-up" data-aos-delay="200">
               <div className="flex items-center gap-2">
                 <FaTruck className="text-orange-200" />
                 <span>Free delivery on orders above ₹500</span>
@@ -332,8 +332,8 @@ export default function Products() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
-            {visible.map(p => (
-              <div key={p.id} className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group border border-gray-100 hover:border-orange-200 transform hover:-translate-y-2">
+            {visible.map((p, index) => (
+              <div key={p.id} className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group border border-gray-100 hover:border-orange-200 transform hover:-translate-y-2" data-aos="fade-up" data-aos-delay={100 + (index % 8) * 100}>
                 {/* Enhanced Product Image */}
                 <div className="relative overflow-hidden bg-gradient-to-b from-gray-50 to-gray-100">
                   <img 

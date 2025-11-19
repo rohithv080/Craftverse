@@ -15,24 +15,26 @@ export default function Cart() {
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="mb-6">
-          <Link to="/buyer/products" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4">
+          <Link to="/buyer/products" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4" data-aos="fade-right">
             <FaArrowLeft className="text-sm" />
             Continue Shopping
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold text-gray-900" data-aos="fade-up">Shopping Cart</h1>
+          <p className="text-gray-600 mt-2" data-aos="fade-up" data-aos-delay="100">
             {items.length} {items.length === 1 ? 'item' : 'items'} in your cart
           </p>
         </div>
 
         {items.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <div className="text-gray-400 text-6xl mb-4">🛒</div>
-            <div className="text-gray-500 text-xl mb-4">Your cart is empty</div>
-            <div className="text-gray-400 mb-6">Add some products to get started</div>
+          <div className="bg-white rounded-lg shadow-sm p-12 text-center" data-aos="fade-up" data-aos-delay="200">
+            <div className="text-gray-400 text-6xl mb-4" data-aos="zoom-in" data-aos-delay="400">🛒</div>
+            <div className="text-gray-500 text-xl mb-4" data-aos="fade-up" data-aos-delay="500">Your cart is empty</div>
+            <div className="text-gray-400 mb-6" data-aos="fade-up" data-aos-delay="600">Add some products to get started</div>
             <Link 
               to="/buyer/products" 
               className="inline-block bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600 transition-colors font-medium"
+              data-aos="fade-up" 
+              data-aos-delay="700"
             >
               Browse Products
             </Link>

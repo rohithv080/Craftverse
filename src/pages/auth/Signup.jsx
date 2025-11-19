@@ -43,10 +43,10 @@ export default function Signup() {
     <div className="min-h-screen grid md:grid-cols-2">
       <div className="flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          <h1 className="text-3xl font-bold mb-6 text-orange-500">KAITHIRAN</h1>
-          <h2 className="text-xl font-semibold mb-4 text-gray-900">Create your account</h2>
+          <h1 className="text-3xl font-bold mb-6 text-orange-500" data-aos="fade-down">KAITHIRAN</h1>
+          <h2 className="text-xl font-semibold mb-4 text-gray-900" data-aos="fade-up" data-aos-delay="100">Create your account</h2>
           {error && <div className="mb-4 text-red-600 text-sm">{error}</div>}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" data-aos="fade-up" data-aos-delay="200">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <input 
@@ -102,11 +102,11 @@ export default function Signup() {
       <div className="hidden md:block bg-gradient-to-br from-orange-100 to-orange-200">
         <div className="h-full w-full flex items-center justify-center p-8">
           <div className="max-w-md text-center">
-            <div className="w-72 h-72 rounded-3xl mx-auto mb-6 bg-orange-100 flex items-center justify-center">
+            <div className="w-72 h-72 rounded-3xl mx-auto mb-6 bg-orange-100 flex items-center justify-center" data-aos="zoom-in" data-aos-delay="300">
               <div className="text-center">
-                <div className="text-6xl mb-4">🛍️</div>
-                <p className="text-gray-700 text-lg">Join KAITHIRAN</p>
-                <p className="text-gray-600">Buy and sell locally with ease</p>
+                <div className="text-6xl mb-4" data-aos="bounce" data-aos-delay="600">🛍️</div>
+                <p className="text-gray-700 text-lg" data-aos="fade-up" data-aos-delay="700">Join KAITHIRAN</p>
+                <p className="text-gray-600" data-aos="fade-up" data-aos-delay="800">Buy and sell locally with ease</p>
               </div>
             </div>
           </div>

@@ -90,3 +90,23 @@
     @apply text-stone-400;
   }
 }
+
+/* AOS (Animate On Scroll) Enhancements */
+[data-aos] {
+  pointer-events: none;
+}
+
+[data-aos].aos-animate {
+  pointer-events: auto;
+}
+
+/* Custom AOS animations */
+[data-aos="slide-right"] {
+  transform: translate3d(-100px, 0, 0);
+  opacity: 0;
+}
+
+[data-aos="slide-left"] {
+  transform: translate3d(100px, 0, 0);
+  opacity: 0;
+}
