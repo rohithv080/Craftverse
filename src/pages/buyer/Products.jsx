@@ -5,24 +5,11 @@ import ProductModal from '../../components/ProductModal'
 import { FaSearch, FaFilter, FaStar, FaShoppingCart, FaHeart, FaCreditCard, FaMapMarkerAlt, FaTruck, FaShieldAlt, FaUsers } from 'react-icons/fa'
 import { useCart } from '../../contexts/CartContext'
 
-function distanceKm(a, b) {
-  if (!a || !b || a.lat == null || a.lng == null || b.lat == null || b.lng == null) return Infinity
-  const R = 6371
-  const dLat = (b.lat - a.lat) * Math.PI / 180
-  const dLng = (b.lng - b.lng) * Math.PI / 180
-  const lat1 = a.lat * Math.PI / 180
-  const lat2 = b.lat * Math.PI / 180
-  const x = Math.sin(dLat/2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng/2) ** 2
-  const d = 2 * R * Math.asin(Math.min(1, Math.sqrt(x)))
-  return d
-}
-
 export default function Products() {
   const { items, addToCart, wishlist, addToWishlist, removeFromWishlist } = useCart()
-  const { products } = useProducts()
+  const { products, loading } = useProducts()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const [center, setCenter] = useState(null)
   const [active, setActive] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
@@ -39,20 +26,16 @@ export default function Products() {
     
     if (urlSearch) {
       setSearchTerm(urlSearch)
+    } else {
+      setSearchTerm('')
     }
+    
     if (urlCategory) {
       setSelectedCategory(urlCategory)
+    } else {
+      setSelectedCategory('all')
     }
   }, [searchParams])
-
-  // products come from useProducts
-
-  useEffect(() => {
-    if (!navigator.geolocation) return
-    navigator.geolocation.getCurrentPosition((pos) => {
-      setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude })
-    })
-  }, [])
 
   const visible = useMemo(() => {
     let filtered = products.filter(p => 
@@ -104,6 +87,18 @@ export default function Products() {
 
   const generateReviews = () => {
     return Math.floor(Math.random() * 1000) + 50 // Random reviews between 50-1050
+  }
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading products...</p>
+        </div>
+      </div>
+    )
   }
 
   return (

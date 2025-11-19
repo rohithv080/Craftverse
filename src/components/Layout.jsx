@@ -1,13 +1,16 @@
-import { Link, Outlet, useLocation } from 'react-router-dom'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import ScrollToTop from './ScrollToTop'
 import { useAuth } from '../contexts/AuthContext'
 import { useTheme, themes } from '../contexts/ThemeContext'
-import { FaSearch, FaUser, FaShoppingCart, FaBars, FaTimes, FaStore, FaHome } from 'react-icons/fa'
+import { FaSearch, FaUser, FaShoppingCart, FaBars, FaTimes, FaStore, FaHome, FaHeart, FaBox, FaInfoCircle, FaEnvelope, FaPhone, FaShippingFast, FaUndoAlt, FaQuestionCircle } from 'react-icons/fa'
 import { useEffect, useState } from 'react'
+import { useCart } from '../contexts/CartContext'
 
 export default function Layout() {
   const { user, logout } = useAuth()
   const { theme, setTheme, cycleTheme } = useTheme()
+  const { items: cartItems } = useCart()
+  const navigate = useNavigate()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const location = useLocation()
@@ -15,8 +18,8 @@ export default function Layout() {
   const handleSearch = (e) => {
     e.preventDefault()
     if (searchTerm.trim()) {
-      // Navigate to products page with search term
-      window.location.href = `/buyer/products?search=${encodeURIComponent(searchTerm)}`
+      navigate(`/buyer/products?search=${encodeURIComponent(searchTerm)}`)
+      setSearchTerm('')
     }
   }
 
@@ -24,6 +27,8 @@ export default function Layout() {
   const isBuyerPage = location.pathname.startsWith('/buyer')
   const isSellerPage = location.pathname.startsWith('/seller')
   const isHomePage = location.pathname === '/'
+  
+  const cartItemCount = cartItems.length
 
   const [elevated, setElevated] = useState(false)
   useEffect(() => {
@@ -61,16 +66,17 @@ export default function Layout() {
 
       {/* Main Header */}
       <header className={`sticky top-0 z-50 ${elevated ? 'backdrop-blur bg-white/80 border-b shadow-sm' : 'bg-white border-b'}`}>
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          {/* Top Row - Logo, Search, User Actions */}
+          <div className="flex items-center justify-between gap-4">
             {/* Logo */}
-            <Link to="/" className="text-2xl font-bold text-orange-500 hover:text-orange-600 transition-colors">
+            <Link to="/" className="text-2xl font-bold text-orange-500 hover:text-orange-600 transition-colors whitespace-nowrap">
               KAITHIRAN
             </Link>
 
             {/* Search Bar - Desktop Only */}
             {!isHomePage && (
-              <div className="hidden md:flex flex-1 max-w-xl mx-8">
+              <div className="hidden md:flex flex-1 max-w-2xl">
                 <form onSubmit={handleSearch} className="relative w-full">
                   <input
                     type="text"
@@ -89,62 +95,98 @@ export default function Layout() {
               </div>
             )}
 
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center gap-6">
-              {isBuyerPage && (
-                <>
-                  <Link to="/buyer/products" className="text-gray-700 hover:text-orange-500 transition-colors font-medium">
-                    Products
-                  </Link>
-                  <Link to="/buyer/wishlist" className="text-gray-700 hover:text-orange-500 transition-colors font-medium">
-                    Wishlist
-                  </Link>
-                  <Link to="/buyer/cart" className="text-gray-700 hover:text-orange-500 transition-colors font-medium">
-                    Cart
-                  </Link>
-                  <Link to="/buyer/orders" className="text-gray-700 hover:text-orange-500 transition-colors font-medium">
-                    My Orders
-                  </Link>
-                </>
+            {/* User Actions */}
+            <div className="flex items-center gap-3">
+              {/* Wishlist Icon */}
+              {user && (
+                <Link 
+                  to="/buyer/wishlist" 
+                  className="hidden lg:block text-gray-700 hover:text-orange-500 transition-colors relative"
+                  title="Wishlist"
+                >
+                  <FaHeart className="text-xl" />
+                </Link>
               )}
               
-              {isSellerPage && (
-                <>
-                  <Link to="/seller/dashboard" className="text-gray-700 hover:text-orange-500 transition-colors font-medium flex items-center gap-2">
-                    <FaStore />
-                    Dashboard
-                  </Link>
-                  <Link to="/seller/add" className="text-gray-700 hover:text-orange-500 transition-colors font-medium flex items-center gap-2">
-                    <FaStore />
-                    Add Product
-                  </Link>
-                </>
+              {/* Cart Icon with Badge */}
+              {user && (
+                <Link 
+                  to="/buyer/cart" 
+                  className="hidden lg:block text-gray-700 hover:text-orange-500 transition-colors relative"
+                  title="Shopping Cart"
+                >
+                  <FaShoppingCart className="text-xl" />
+                  {cartItemCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                      {cartItemCount}
+                    </span>
+                  )}
+                </Link>
               )}
-            </nav>
-
-            {/* User Actions */}
-            <div className="flex items-center gap-4">
               
               {user ? (
                 <div className="relative group">
                   <button className="flex items-center gap-2 text-gray-700 hover:text-orange-500 transition-colors">
                     <FaUser className="text-xl" />
-                    <span className="hidden sm:block">{user.name || user.email?.split('@')[0] || 'User'}</span>
+                    <span className="hidden xl:block">{user.name || user.email?.split('@')[0] || 'User'}</span>
                   </button>
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                     <div className="py-2">
+                      <Link
+                        to="/buyer/profile"
+                        className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
+                        <FaUser className="text-sm" />
+                        My Profile
+                      </Link>
+                      <Link
+                        to="/buyer/orders"
+                        className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
+                        <FaBox className="text-sm" />
+                        My Orders
+                      </Link>
+                      <Link
+                        to="/buyer/wishlist"
+                        className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors lg:hidden"
+                      >
+                        <FaHeart className="text-sm" />
+                        Wishlist
+                      </Link>
+                      <Link
+                        to="/buyer/cart"
+                        className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors lg:hidden"
+                      >
+                        <FaShoppingCart className="text-sm" />
+                        Cart {cartItemCount > 0 && `(${cartItemCount})`}
+                      </Link>
+                      <hr className="my-2" />
+                      {user.role === 'seller' && (
+                        <Link
+                          to="/seller/dashboard"
+                          className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          <FaStore className="text-sm" />
+                          Seller Dashboard
+                        </Link>
+                      )}
                       <button
                         onClick={logout}
-                        className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                        className="w-full flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors"
                       >
+                        <FaTimes className="text-sm" />
                         Logout
                       </button>
                     </div>
                   </div>
                 </div>
               ) : (
-                <Link to="/auth/login" className="text-gray-700 hover:text-orange-500 transition-colors">
-                  <FaUser className="text-xl" />
+                <Link 
+                  to="/auth/login" 
+                  className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium whitespace-nowrap"
+                >
+                  <FaUser />
+                  <span className="hidden sm:inline">Login</span>
                 </Link>
               )}
 
@@ -153,10 +195,41 @@ export default function Layout() {
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="md:hidden p-2 text-gray-700 hover:text-orange-500 transition-colors"
               >
-                {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
+                {isMobileMenuOpen ? <FaTimes className="text-xl" /> : <FaBars className="text-xl" />}
               </button>
             </div>
           </div>
+
+          {/* Bottom Row - Navigation Menu (Desktop Only) */}
+          <nav className="hidden md:flex items-center justify-center gap-8 mt-3 pt-3 border-t border-gray-100">
+            <Link to="/" className="text-gray-700 hover:text-orange-500 transition-colors font-medium text-sm">
+              Home
+            </Link>
+            
+            <Link to="/buyer/products" className="text-gray-700 hover:text-orange-500 transition-colors font-medium text-sm">
+              Shop
+            </Link>
+            
+            <Link to="/help" className="text-gray-700 hover:text-orange-500 transition-colors font-medium text-sm">
+              Help
+            </Link>
+            
+            <Link to="/support" className="text-gray-700 hover:text-orange-500 transition-colors font-medium text-sm">
+              Contact
+            </Link>
+            
+            {isSellerPage && (
+              <>
+                <Link to="/seller/dashboard" className="text-gray-700 hover:text-orange-500 transition-colors font-medium flex items-center gap-2 text-sm">
+                  <FaStore className="text-xs" />
+                  Dashboard
+                </Link>
+                <Link to="/seller/add" className="text-gray-700 hover:text-orange-500 transition-colors font-medium text-sm">
+                  Add Product
+                </Link>
+              </>
+            )}
+          </nav>
 
           {/* Mobile Menu */}
           {isMobileMenuOpen && (
@@ -164,7 +237,7 @@ export default function Layout() {
               <div className="pt-4 space-y-3">
                 {/* Mobile Search */}
                 {!isHomePage && (
-                  <form onSubmit={handleSearch} className="relative">
+                  <form onSubmit={handleSearch} className="relative mb-4">
                     <input
                       type="text"
                       value={searchTerm}
@@ -181,61 +254,117 @@ export default function Layout() {
                   </form>
                 )}
                 
-                {isBuyerPage && (
+                {/* Main Navigation */}
+                <Link 
+                  to="/" 
+                  className="flex items-center gap-2 text-gray-700 hover:text-orange-500 transition-colors font-medium py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <FaHome />
+                  Home
+                </Link>
+                
+                <Link 
+                  to="/buyer/products" 
+                  className="flex items-center gap-2 text-gray-700 hover:text-orange-500 transition-colors font-medium py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <FaStore />
+                  Shop
+                </Link>
+                
+                <Link 
+                  to="/help" 
+                  className="flex items-center gap-2 text-gray-700 hover:text-orange-500 transition-colors font-medium py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <FaQuestionCircle />
+                  Help
+                </Link>
+                
+                <Link 
+                  to="/support" 
+                  className="flex items-center gap-2 text-gray-700 hover:text-orange-500 transition-colors font-medium py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <FaEnvelope />
+                  Contact
+                </Link>
+                
+                {user && (
                   <>
+                    <hr className="my-2" />
                     <Link 
-                      to="/buyer/products" 
-                      className="block text-gray-700 hover:text-orange-500 transition-colors font-medium"
+                      to="/buyer/wishlist" 
+                      className="flex items-center gap-2 text-gray-700 hover:text-orange-500 transition-colors font-medium py-2"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      Products
+                      <FaHeart />
+                      Wishlist
                     </Link>
                     <Link 
                       to="/buyer/cart" 
-                      className="block text-gray-700 hover:text-orange-500 transition-colors font-medium"
+                      className="flex items-center gap-2 text-gray-700 hover:text-orange-500 transition-colors font-medium py-2"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      Cart
+                      <FaShoppingCart />
+                      Cart {cartItemCount > 0 && `(${cartItemCount})`}
                     </Link>
                     <Link 
                       to="/buyer/orders" 
-                      className="block text-gray-700 hover:text-orange-500 transition-colors font-medium"
+                      className="flex items-center gap-2 text-gray-700 hover:text-orange-500 transition-colors font-medium py-2"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
+                      <FaBox />
                       My Orders
+                    </Link>
+                    <Link 
+                      to="/buyer/profile" 
+                      className="flex items-center gap-2 text-gray-700 hover:text-orange-500 transition-colors font-medium py-2"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <FaUser />
+                      Profile
                     </Link>
                   </>
                 )}
                 
                 {isSellerPage && (
                   <>
+                    <hr className="my-2" />
                     <Link 
                       to="/seller/dashboard" 
-                      className="block text-gray-700 hover:text-orange-500 transition-colors font-medium"
+                      className="flex items-center gap-2 text-gray-700 hover:text-orange-500 transition-colors font-medium py-2"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      Dashboard
+                      <FaStore />
+                      Seller Dashboard
                     </Link>
                     <Link 
                       to="/seller/add" 
-                      className="block text-gray-700 hover:text-orange-500 transition-colors font-medium"
+                      className="flex items-center gap-2 text-gray-700 hover:text-orange-500 transition-colors font-medium py-2"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
+                      <FaStore />
                       Add Product
                     </Link>
                   </>
                 )}
                 
                 {user && (
-                  <button
-                    onClick={() => {
-                      logout()
-                      setIsMobileMenuOpen(false)
-                    }}
-                    className="block w-full text-left text-gray-700 hover:text-orange-500 transition-colors font-medium"
-                  >
-                    Logout
-                  </button>
+                  <>
+                    <hr className="my-2" />
+                    <button
+                      onClick={() => {
+                        logout()
+                        setIsMobileMenuOpen(false)
+                      }}
+                      className="flex items-center gap-2 w-full text-left text-red-600 hover:text-red-700 transition-colors font-medium py-2"
+                    >
+                      <FaTimes />
+                      Logout
+                    </button>
+                  </>
                 )}
               </div>
             </div>

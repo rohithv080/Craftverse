@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { db } from "../firebase/firebaseConfig";
-import { collection, getDocs, query, where, limit, orderBy } from "firebase/firestore";
-import { classifyIntent, extractKeywords, formatINR, getRandomResponse, generateSuggestions } from "../chatbot/chatbotBrain";
+import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { classifyIntent, extractKeywords } from "../chatbot/chatbotBrain";
 
 const ChatbotContext = createContext();
 
@@ -150,7 +150,6 @@ export function ChatbotProvider({ children }) {
       return filteredResults;
       
     } catch (error) {
-      console.error('Enhanced search error:', error);
       return [];
     } finally {
       setLoading(false);
@@ -331,7 +330,6 @@ export function ChatbotProvider({ children }) {
           time: Date.now()
         }]);
       } catch (err) {
-        console.error("Product details error:", err);
         setMessages((m) => [...m, { 
           role: "bot", 
           content: "I'm having trouble getting product details right now. Please try again or ask about specific categories like 'pottery' or 'wooden items'.",
@@ -358,7 +356,6 @@ export function ChatbotProvider({ children }) {
           time: Date.now()
         }]);
       } catch (err) {
-        console.error("Occasion search error:", err);
         setMessages((m) => [...m, { 
           role: "bot", 
           content: "Let me help you find occasion-specific items! Try telling me about the event - wedding, birthday, festival, etc.",
@@ -412,7 +409,6 @@ export function ChatbotProvider({ children }) {
       }]);
 
     } catch (err) {
-      console.error("Enhanced chatbot error:", err);
       const errorMessages = [
         "Oops! I'm having trouble searching right now. Please try again in a moment! 🔄",
         "Sorry, there seems to be a connection issue. Could you try rephrasing your question? 🤔",
