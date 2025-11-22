@@ -22,7 +22,10 @@ export default function Signup() {
     }
     setLoading(true)
     try {
-      await signup({ email: form.email, password: form.password, name: form.name })
+      console.log('Starting signup process...');
+      await signup({ email: form.email, password: form.password, name: form.name });
+      console.log('Signup completed successfully');
+      
       setShowSuccessPopup(true)
       show('Account created successfully!')
       
@@ -32,8 +35,10 @@ export default function Signup() {
         navigate('/', { replace: true })
       }, 2000)
     } catch (err) {
-      setError(err.message || 'Failed to sign up')
-      show(err.message || 'Failed to sign up', 'error')
+      console.error('Signup form error:', err);
+      const errorMessage = err.code ? `${err.code}: ${err.message}` : (err.message || 'Failed to sign up');
+      setError(errorMessage)
+      show(errorMessage, 'error')
     } finally {
       setLoading(false)
     }

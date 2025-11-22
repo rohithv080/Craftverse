@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import ScrollToTop from './ScrollToTop'
+import Chatbot from './chatbot.jsx'
 import { useAuth } from '../contexts/AuthContext'
 import { useTheme, themes } from '../contexts/ThemeContext'
 import { FaSearch, FaUser, FaShoppingCart, FaBars, FaTimes, FaStore, FaHome, FaHeart, FaBox, FaInfoCircle, FaEnvelope, FaPhone, FaShippingFast, FaUndoAlt, FaQuestionCircle } from 'react-icons/fa'
@@ -432,6 +433,9 @@ export default function Layout() {
       >
         ↑
       </button>
+
+      {/* Chatbot */}
+      <Chatbot />
     </div>
   )
 }

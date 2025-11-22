@@ -9,6 +9,8 @@ const firebaseConfig = {
     apiKey: "AIzaSyDorO0hUT0zKMsJbGcKUn33IYlrrupoUDI",
     authDomain: "kaithiran-web.firebaseapp.com",
     projectId: "kaithiran-web",
+    // storageBucket must match the bucket name shown in Firebase Console
+    // Typical format: '<project-id>.appspot.com'
     storageBucket: "kaithiran-web.firebasestorage.app",
     messagingSenderId: "439320923041",
     appId: "1:439320923041:web:41ea1aef36926d41a859e0",

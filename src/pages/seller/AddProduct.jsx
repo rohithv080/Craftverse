@@ -32,10 +32,31 @@ export default function AddProduct() {
     e.preventDefault()
     setError('')
     if (!imageFile) { setError('Please upload product image'); return }
+    // Ensure user is signed in and we have a UID before uploading
+    if (!user || !user.uid) {
+      const msg = 'You must be signed in to add a product.'
+      setError(msg)
+      show(msg, 'error')
+      return
+    }
     try {
       setLoading(true)
-      const fileRef = ref(storage, `products/${user.uid}/${Date.now()}-${imageFile.name}`)
+      const path = `products/${user.uid}/${Date.now()}-${imageFile.name}`
+      console.log('=== UPLOAD DEBUG INFO ===')
+      console.log('User object:', user)
+      console.log('User UID:', user.uid)
+      console.log('User auth state:', user ? 'authenticated' : 'not authenticated')
+      console.log('Storage path:', path)
+      console.log('File name:', imageFile.name)
+      console.log('File size:', imageFile.size)
+      console.log('Storage bucket:', storage.app.options.storageBucket)
+      console.log('========================')
+      
+      const fileRef = ref(storage, path)
+      console.log('Storage reference created:', fileRef.toString())
+      
       await uploadBytes(fileRef, imageFile)
+      console.log('Upload successful, getting download URL...')
       const imageUrl = await getDownloadURL(fileRef)
       
       // Add product to Firestore
@@ -65,8 +86,10 @@ export default function AddProduct() {
       show('Product added successfully!')
       navigate('/seller/dashboard')
     } catch (err) {
-      setError(err.message || 'Failed to add product')
-      show(err.message || 'Failed to add product', 'error')
+      console.error('AddProduct upload error:', err)
+      const msg = err?.message || 'Failed to add product'
+      setError(msg)
+      show(msg, 'error')
     } finally {
       setLoading(false)
     }
@@ -272,5 +295,3 @@ export default function AddProduct() {
     </div>
   )
 }
-
-
