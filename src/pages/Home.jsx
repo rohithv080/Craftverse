@@ -112,7 +112,7 @@ export default function Home() {
               </div>
               
               <h1 className="text-5xl md:text-7xl font-extrabold leading-tight">
-                <span className="bg-gradient-to-r from-orange-600 to-rose-600 bg-clip-text text-transparent">
+                <span className="text-orange-600">
                   KAITHIRAN
                 </span>
               </h1>
