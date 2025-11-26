@@ -163,13 +163,22 @@ export default function Layout() {
                       </Link>
                       <hr className="my-2" />
                       {user.role === 'seller' && (
-                        <Link
-                          to="/seller/dashboard"
-                          className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
-                        >
-                          <FaStore className="text-sm" />
-                          Seller Dashboard
-                        </Link>
+                        <>
+                          <Link
+                            to="/seller/dashboard"
+                            className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                          >
+                            <FaStore className="text-sm" />
+                            Seller Dashboard
+                          </Link>
+                          <Link
+                            to="/seller/orders"
+                            className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                          >
+                            <FaBox className="text-sm" />
+                            Received Orders
+                          </Link>
+                        </>
                       )}
                       <button
                         onClick={logout}

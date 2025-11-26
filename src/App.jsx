@@ -10,6 +10,7 @@ import RoleSelect from "./pages/RoleSelect.jsx";
 import AddProduct from "./pages/seller/AddProduct.jsx";
 import EditProduct from "./pages/seller/EditProduct.jsx";
 import SellerDashboard from "./pages/seller/Dashboard.jsx";
+import ReceivedOrders from "./pages/seller/ReceivedOrders.jsx";
 import Products from "./pages/buyer/Products.jsx";
 import Cart from "./pages/buyer/Cart.jsx";
 import Checkout from "./pages/buyer/Checkout.jsx";
@@ -108,6 +109,14 @@ function App() {
                       element={
                         <ProtectedRoute>
                           <SellerDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/seller/orders"
+                      element={
+                        <ProtectedRoute>
+                          <ReceivedOrders />
                         </ProtectedRoute>
                       }
                     />
