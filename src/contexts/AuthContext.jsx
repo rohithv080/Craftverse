@@ -33,47 +33,31 @@ export function AuthProvider({ children }) {
   }, [])
 
   async function signup({ email, password, name }) {
-    console.log('=== SIGNUP DEBUG ===');
-    console.log('Attempting signup for email:', email);
-    
     try {
-      // Step 1: Create authentication user
-      console.log('Creating auth user...');
+      // Create authentication user
       const cred = await createUserWithEmailAndPassword(auth, email, password);
-      console.log('Auth user created:', cred.user.uid);
       
-      // Step 2: Update profile if name provided
+      // Update profile if name provided
       if (name) {
-        console.log('Updating display name...');
         await updateProfile(cred.user, { displayName: name });
-        console.log('Display name updated');
       }
       
-      // Step 3: Create user document in Firestore
-      console.log('Creating user document in Firestore...');
+      // Create user document in Firestore
       const userDocRef = doc(db, 'users', cred.user.uid);
-      console.log('User document path:', `users/${cred.user.uid}`);
       
       const userData = {
         uid: cred.user.uid,
         email,
         name: name || '',
         createdAt: new Date().toISOString(),
-        role: null, // Role will be set when user selects it
+        role: null,
         isNewUser: true
       };
-      console.log('User data to save:', userData);
       
       await setDoc(userDocRef, userData);
-      console.log('User document created successfully');
       
       return cred.user;
     } catch (error) {
-      console.error('Signup error details:', {
-        code: error.code,
-        message: error.message,
-        stack: error.stack
-      });
       throw error;
     }
   }

@@ -45,7 +45,6 @@ export default function ReceivedOrders() {
         setLoading(false)
       },
       (error) => {
-        console.error('Error fetching orders:', error)
         setLoading(false)
       }
     )
@@ -110,7 +109,6 @@ export default function ReceivedOrders() {
       show(`Order status updated to ${newStatus}`, { type: 'success' })
     } catch (error) {
       show('Failed to update order status', { type: 'error' })
-      console.error('Error updating status:', error)
     } finally {
       setUpdatingStatus(null)
     }

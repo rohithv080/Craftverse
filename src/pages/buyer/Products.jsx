@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import useProducts from '../../hooks/useProducts'
-import { Link, useSearchParams, useNavigate } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import ProductModal from '../../components/ProductModal'
-import { FaSearch, FaFilter, FaStar, FaShoppingCart, FaHeart, FaCreditCard, FaMapMarkerAlt, FaTruck, FaShieldAlt, FaUsers } from 'react-icons/fa'
+import { FaFilter, FaStar, FaShoppingCart, FaHeart, FaTruck, FaShieldAlt, FaUsers } from 'react-icons/fa'
 import { useCart } from '../../contexts/CartContext'
 
 export default function Products() {
-  const { items, addToCart, wishlist, addToWishlist, removeFromWishlist } = useCart()
+  const { addToCart, wishlist, addToWishlist, removeFromWishlist } = useCart()
   const { products, loading } = useProducts()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()

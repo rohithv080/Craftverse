@@ -22,9 +22,9 @@ export default function PowerBIReport() {
         }}
         eventHandlers={
           new Map([
-            ['loaded', function () {console.log('Report loaded');}],
-            ['rendered', function () {console.log('Report rendered');}],
-            ['error', function (event) {console.error(event.detail);}]
+            ['loaded', function () {}],
+            ['rendered', function () {}],
+            ['error', function () {}]
           ])
         }
         cssClassName="w-full h-full"

@@ -33,14 +33,6 @@ export default function Checkout() {
   const finalTotal = subtotal + deliveryFee
 
   async function handlePay() {
-    console.log('=== CHECKOUT DEBUG START ===');
-    console.log('User object:', user);
-    console.log('User authenticated:', !!user);
-    console.log('User UID:', user?.uid);
-    console.log('User email:', user?.email);
-    console.log('Firebase auth current user:', auth.currentUser);
-    console.log('Firebase auth current user UID:', auth.currentUser?.uid);
-    
     if (!user) {
       setError('Please log in to complete your order')
       return
@@ -80,32 +72,6 @@ export default function Checkout() {
       }
 
       // Create order in database
-      console.log('=== ORDER CREATION DEBUG ===');
-      console.log('User creating order:', user?.uid);
-      console.log('User authenticated status:', !!user?.uid);
-      
-      // Test with minimal order data first
-      console.log('Testing minimal order creation...');
-      try {
-        const minimalOrderData = {
-          buyerId: user.uid,
-          total: finalTotal,
-          status: 'pending',
-          createdAt: serverTimestamp()
-        };
-        
-        console.log('Minimal order data:', minimalOrderData);
-        const testOrderRef = await addDoc(collection(db, 'orders'), minimalOrderData);
-        console.log('Minimal order created successfully with ID:', testOrderRef.id);
-        
-        // If minimal works, delete it and create the full order
-        // Note: In production, you wouldn't delete, but this is for debugging
-        console.log('Minimal order test passed, creating full order...');
-      } catch (minimalError) {
-        console.error('Minimal order creation failed:', minimalError);
-        throw new Error(`Auth/permissions issue: ${minimalError.message}`);
-      }
-      
       const orderData = {
         buyerId: user.uid,
         items: items.map(item => ({
@@ -132,9 +98,7 @@ export default function Checkout() {
         updatedAt: serverTimestamp()
       }
 
-      console.log('Creating full order document...');
       const orderRef = await addDoc(collection(db, 'orders'), orderData)
-      console.log('Order created successfully with ID:', orderRef.id);
 
       // Send email via EmailJS if environment variables are configured
       const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
@@ -162,14 +126,6 @@ export default function Checkout() {
   clearCart()
   navigate('/buyer/order-confirmation', { state: { total: finalTotal, address: deliveryAddress, orderId: orderRef.id } })
     } catch (err) {
-      console.error('=== ORDER CREATION ERROR ===');
-      console.error('Error details:', {
-        code: err.code,
-        message: err.message,
-        stack: err.stack
-      });
-      console.error('User UID:', user?.uid);
-      console.error('Items being ordered:', items);
       setError(err.message || 'An error occurred while processing your order')
     } finally {
       setLoading(false)

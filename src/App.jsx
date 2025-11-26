@@ -53,12 +53,10 @@ function App() {
         disable: false,
         startEvent: 'DOMContentLoaded'
       });
-      console.log('🎬 AOS (Animate On Scroll) initialized!');
       
       // Force refresh after a short delay
       setTimeout(() => {
         AOS.refresh();
-        console.log('🔄 AOS refreshed');
       }, 100);
     }, 100);
 
