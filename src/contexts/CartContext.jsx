@@ -36,7 +36,18 @@ export function CartProvider({ children }) {
       if (existing) {
         return prev.map(i => i.id === product.id ? { ...i, qty: i.qty + qty } : i)
       }
-      return [...prev, { ...product, qty }]
+      // Ensure sellerId is preserved when adding to cart
+      return [...prev, { 
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        imageUrl: product.imageUrl,
+        sellerId: product.sellerId,
+        sellerName: product.sellerName,
+        category: product.category,
+        quantity: product.quantity, // available stock
+        qty 
+      }]
     })
   }
 

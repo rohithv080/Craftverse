@@ -74,13 +74,19 @@ export default function Checkout() {
       // Create order in database
       const orderData = {
         buyerId: user.uid,
+        buyerEmail: user.email,
         items: items.map(item => ({
           id: item.id,
           name: item.name,
           price: item.price,
           qty: item.qty,
-          imageUrl: item.imageUrl
+          imageUrl: item.imageUrl,
+          sellerId: item.sellerId,
+          sellerName: item.sellerName,
+          category: item.category
         })),
+        // Store unique seller IDs for easy querying
+        sellerIds: [...new Set(items.map(item => item.sellerId).filter(Boolean))],
         total: finalTotal,
         subtotal: subtotal,
         deliveryFee: deliveryFee,

@@ -20,9 +20,10 @@ export default function ReceivedOrders() {
       return
     }
     
-    // Get orders that contain products from this seller
+    // Query orders that contain products from this seller using sellerIds array
     const q = query(
       collection(db, 'orders'),
+      where('sellerIds', 'array-contains', user.uid),
       orderBy('createdAt', 'desc')
     )
 
@@ -31,7 +32,7 @@ export default function ReceivedOrders() {
         const orderList = []
         snapshot.forEach(docSnap => {
           const orderData = { id: docSnap.id, ...docSnap.data() }
-          // Filter orders that have items from this seller
+          // Filter to show only this seller's items
           const sellerItems = orderData.items?.filter(item => item.sellerId === user.uid)
           if (sellerItems && sellerItems.length > 0) {
             orderList.push({

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useCart } from '../contexts/CartContext'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 export default function ProductModal({ product, onClose }) {
   const { addToCart } = useCart()
