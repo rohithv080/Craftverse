@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore'
 import { db } from '../../firebase/firebaseConfig'
 import { useAuth } from '../../contexts/AuthContext'
-import { FaUser, FaMapMarkerAlt, FaPhone, FaEnvelope, FaEdit, FaSave, FaTimes } from 'react-icons/fa'
+import { FaUser, FaMapMarkerAlt, FaPhone, FaEnvelope, FaEdit, FaSave, FaTimes, FaExclamationCircle } from 'react-icons/fa'
+import { validateName, validatePhone, validateAddress, validateCity, validateState, validatePincode } from '../../utils/validation'
 
 export default function Profile() {
   const { user } = useAuth()
@@ -18,6 +19,8 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [errors, setErrors] = useState({})
+  const [touched, setTouched] = useState({})
 
   useEffect(() => {
     if (!user) return
@@ -43,11 +46,17 @@ export default function Profile() {
 
   const handleSave = async () => {
     if (!user) return
+    
+    if (!validateAllFields()) {
+      return
+    }
+    
     setSaving(true)
     try {
       const docRef = doc(db, 'users', user.uid)
-      await updateDoc(docRef, profile)
+      await setDoc(docRef, profile, { merge: true })
       setIsEditing(false)
+      setTouched({})
     } catch (error) {
       // Error saving profile, show error state
     } finally {
@@ -58,6 +67,65 @@ export default function Profile() {
   const handleCancel = () => {
     loadProfile() // Reload original data
     setIsEditing(false)
+    setErrors({})
+    setTouched({})
+  }
+
+  const handleProfileChange = (field, value) => {
+    setProfile({...profile, [field]: value})
+    if (errors[field]) {
+      setErrors({...errors, [field]: ''})
+    }
+  }
+
+  const handleBlur = (field) => {
+    setTouched({...touched, [field]: true})
+    validateField(field, profile[field])
+  }
+
+  const validateField = (field, value) => {
+    let error = ''
+    // Only validate if there's a value (profile fields are optional)
+    if (value) {
+      switch (field) {
+        case 'fullName':
+          error = validateName(value)
+          break
+        case 'phone':
+          error = validatePhone(value)
+          break
+        case 'address':
+          error = validateAddress(value)
+          break
+        case 'city':
+          error = validateCity(value)
+          break
+        case 'state':
+          error = validateState(value)
+          break
+        case 'pincode':
+          error = validatePincode(value)
+          break
+        default:
+          break
+      }
+    }
+    setErrors(prev => ({...prev, [field]: error}))
+    return error
+  }
+
+  const validateAllFields = () => {
+    const newErrors = {}
+    // Only validate fields that have values
+    if (profile.fullName) newErrors.fullName = validateName(profile.fullName)
+    if (profile.phone) newErrors.phone = validatePhone(profile.phone)
+    if (profile.address) newErrors.address = validateAddress(profile.address)
+    if (profile.city) newErrors.city = validateCity(profile.city)
+    if (profile.state) newErrors.state = validateState(profile.state)
+    if (profile.pincode) newErrors.pincode = validatePincode(profile.pincode)
+    
+    setErrors(newErrors)
+    return !Object.values(newErrors).some(error => error)
   }
 
   if (loading) {
@@ -119,13 +187,22 @@ export default function Profile() {
                   Full Name
                 </label>
                 {isEditing ? (
-                  <input
-                    type="text"
-                    value={profile.fullName}
-                    onChange={(e) => setProfile({...profile, fullName: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    placeholder="Enter your full name"
-                  />
+                  <div>
+                    <input
+                      type="text"
+                      value={profile.fullName}
+                      onChange={(e) => handleProfileChange('fullName', e.target.value)}
+                      onBlur={() => handleBlur('fullName')}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${touched.fullName && errors.fullName ? 'border-red-500' : 'border-gray-300'}`}
+                      placeholder="Enter your full name"
+                    />
+                    {touched.fullName && errors.fullName && (
+                      <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                        <FaExclamationCircle className="text-xs" />
+                        {errors.fullName}
+                      </p>
+                    )}
+                  </div>
                 ) : (
                   <div className="px-3 py-2 bg-gray-50 rounded-lg text-gray-900">
                     {profile.fullName || 'Not provided'}
@@ -140,13 +217,22 @@ export default function Profile() {
                   Phone Number
                 </label>
                 {isEditing ? (
-                  <input
-                    type="tel"
-                    value={profile.phone}
-                    onChange={(e) => setProfile({...profile, phone: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    placeholder="Enter phone number"
-                  />
+                  <div>
+                    <input
+                      type="tel"
+                      value={profile.phone}
+                      onChange={(e) => handleProfileChange('phone', e.target.value)}
+                      onBlur={() => handleBlur('phone')}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${touched.phone && errors.phone ? 'border-red-500' : 'border-gray-300'}`}
+                      placeholder="Enter phone number"
+                    />
+                    {touched.phone && errors.phone && (
+                      <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                        <FaExclamationCircle className="text-xs" />
+                        {errors.phone}
+                      </p>
+                    )}
+                  </div>
                 ) : (
                   <div className="px-3 py-2 bg-gray-50 rounded-lg text-gray-900">
                     {profile.phone || 'Not provided'}
@@ -172,13 +258,22 @@ export default function Profile() {
                   City
                 </label>
                 {isEditing ? (
-                  <input
-                    type="text"
-                    value={profile.city}
-                    onChange={(e) => setProfile({...profile, city: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    placeholder="Enter city"
-                  />
+                  <div>
+                    <input
+                      type="text"
+                      value={profile.city}
+                      onChange={(e) => handleProfileChange('city', e.target.value)}
+                      onBlur={() => handleBlur('city')}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${touched.city && errors.city ? 'border-red-500' : 'border-gray-300'}`}
+                      placeholder="Enter city"
+                    />
+                    {touched.city && errors.city && (
+                      <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                        <FaExclamationCircle className="text-xs" />
+                        {errors.city}
+                      </p>
+                    )}
+                  </div>
                 ) : (
                   <div className="px-3 py-2 bg-gray-50 rounded-lg text-gray-900">
                     {profile.city || 'Not provided'}
@@ -193,13 +288,22 @@ export default function Profile() {
                   State
                 </label>
                 {isEditing ? (
-                  <input
-                    type="text"
-                    value={profile.state}
-                    onChange={(e) => setProfile({...profile, state: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    placeholder="Enter state"
-                  />
+                  <div>
+                    <input
+                      type="text"
+                      value={profile.state}
+                      onChange={(e) => handleProfileChange('state', e.target.value)}
+                      onBlur={() => handleBlur('state')}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${touched.state && errors.state ? 'border-red-500' : 'border-gray-300'}`}
+                      placeholder="Enter state"
+                    />
+                    {touched.state && errors.state && (
+                      <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                        <FaExclamationCircle className="text-xs" />
+                        {errors.state}
+                      </p>
+                    )}
+                  </div>
                 ) : (
                   <div className="px-3 py-2 bg-gray-50 rounded-lg text-gray-900">
                     {profile.state || 'Not provided'}
@@ -214,13 +318,22 @@ export default function Profile() {
                   Pincode
                 </label>
                 {isEditing ? (
-                  <input
-                    type="text"
-                    value={profile.pincode}
-                    onChange={(e) => setProfile({...profile, pincode: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    placeholder="Enter pincode"
-                  />
+                  <div>
+                    <input
+                      type="text"
+                      value={profile.pincode}
+                      onChange={(e) => handleProfileChange('pincode', e.target.value)}
+                      onBlur={() => handleBlur('pincode')}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${touched.pincode && errors.pincode ? 'border-red-500' : 'border-gray-300'}`}
+                      placeholder="Enter pincode"
+                    />
+                    {touched.pincode && errors.pincode && (
+                      <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                        <FaExclamationCircle className="text-xs" />
+                        {errors.pincode}
+                      </p>
+                    )}
+                  </div>
                 ) : (
                   <div className="px-3 py-2 bg-gray-50 rounded-lg text-gray-900">
                     {profile.pincode || 'Not provided'}
@@ -236,13 +349,22 @@ export default function Profile() {
                 Full Address
               </label>
               {isEditing ? (
-                <textarea
-                  value={profile.address}
-                  onChange={(e) => setProfile({...profile, address: e.target.value})}
-                  rows="3"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  placeholder="Enter your complete address"
-                />
+                <div>
+                  <textarea
+                    value={profile.address}
+                    onChange={(e) => handleProfileChange('address', e.target.value)}
+                    onBlur={() => handleBlur('address')}
+                    rows="3"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${touched.address && errors.address ? 'border-red-500' : 'border-gray-300'}`}
+                    placeholder="Enter your complete address"
+                  />
+                  {touched.address && errors.address && (
+                    <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                      <FaExclamationCircle className="text-xs" />
+                      {errors.address}
+                    </p>
+                  )}
+                </div>
               ) : (
                 <div className="px-3 py-2 bg-gray-50 rounded-lg text-gray-900 min-h-[60px]">
                   {profile.address || 'Not provided'}

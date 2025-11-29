@@ -2,31 +2,67 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useToast } from '../../contexts/ToastContext'
+import { FaExclamationCircle } from 'react-icons/fa'
+import { validateEmail } from '../../utils/validation'
 
 export default function Login() {
   const { login, user } = useAuth()
   const navigate = useNavigate()
   const { show } = useToast()
   const [form, setForm] = useState({ email: '', password: '' })
+  const [errors, setErrors] = useState({})
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   // Redirect if user is already logged in
   useEffect(() => {
     if (user) {
-      // Go to homepage after login
       navigate('/', { replace: true })
     }
   }, [user, navigate])
 
+  function handleChange(field, value) {
+    setForm({ ...form, [field]: value })
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: '' })
+    }
+  }
+
+  function handleBlur(field) {
+    if (field === 'email') {
+      const result = validateEmail(form.email)
+      if (!result.valid) {
+        setErrors({ ...errors, email: result.message })
+      }
+    }
+  }
+
+  function validateForm() {
+    const newErrors = {}
+    
+    const emailResult = validateEmail(form.email)
+    if (!emailResult.valid) newErrors.email = emailResult.message
+    
+    if (!form.password) {
+      newErrors.password = 'Password is required'
+    }
+    
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
+    
+    if (!validateForm()) {
+      return
+    }
+    
     setLoading(true)
     try {
       await login(form)
       show('Logged in successfully')
-      // Navigation will be handled by useEffect above
     } catch (err) {
       setError(err.message || 'Failed to login')
       show(err.message || 'Failed to login', 'error')
@@ -48,20 +84,39 @@ export default function Login() {
               <input 
                 type="email" 
                 value={form.email} 
-                onChange={(e)=>setForm({...form, email:e.target.value})} 
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent" 
+                onChange={(e) => handleChange('email', e.target.value)}
+                onBlur={() => handleBlur('email')}
+                className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                  errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                }`}
+                placeholder="Enter your email"
                 required 
               />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                  <FaExclamationCircle className="text-xs" />
+                  {errors.email}
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
               <input 
                 type="password" 
                 value={form.password} 
-                onChange={(e)=>setForm({...form, password:e.target.value})} 
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent" 
+                onChange={(e) => handleChange('password', e.target.value)}
+                className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                  errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                }`}
+                placeholder="Enter your password"
                 required 
               />
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                  <FaExclamationCircle className="text-xs" />
+                  {errors.password}
+                </p>
+              )}
             </div>
             <button 
               disabled={loading} 

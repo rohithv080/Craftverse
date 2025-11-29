@@ -5,7 +5,8 @@ import { doc, getDoc, updateDoc, addDoc, collection, serverTimestamp } from 'fir
 import { db, auth } from '../../firebase/firebaseConfig'
 import { useCart } from '../../contexts/CartContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { FaArrowLeft, FaMapMarkerAlt, FaCreditCard, FaLock, FaShieldAlt, FaTruck } from 'react-icons/fa'
+import { FaArrowLeft, FaMapMarkerAlt, FaCreditCard, FaLock, FaShieldAlt, FaTruck, FaExclamationCircle } from 'react-icons/fa'
+import { validateName, validatePhone, validateAddress, validateCity, validateState, validatePincode } from '../../utils/validation'
 
 export default function Checkout() {
   const location = useLocation()
@@ -28,6 +29,63 @@ export default function Checkout() {
     pincode: ''
   })
   const [paymentMethod, setPaymentMethod] = useState('cod')
+  const [errors, setErrors] = useState({})
+  const [touched, setTouched] = useState({})
+
+  const handleAddressChange = (field, value) => {
+    setDeliveryAddress({...deliveryAddress, [field]: value})
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors({...errors, [field]: ''})
+    }
+  }
+
+  const handleBlur = (field) => {
+    setTouched({...touched, [field]: true})
+    validateField(field, deliveryAddress[field])
+  }
+
+  const validateField = (field, value) => {
+    let error = ''
+    switch (field) {
+      case 'fullName':
+        error = validateName(value)
+        break
+      case 'phone':
+        error = validatePhone(value)
+        break
+      case 'address':
+        error = validateAddress(value)
+        break
+      case 'city':
+        error = validateCity(value)
+        break
+      case 'state':
+        error = validateState(value)
+        break
+      case 'pincode':
+        error = validatePincode(value)
+        break
+      default:
+        break
+    }
+    setErrors(prev => ({...prev, [field]: error}))
+    return error
+  }
+
+  const validateAllFields = () => {
+    const newErrors = {
+      fullName: validateName(deliveryAddress.fullName),
+      phone: validatePhone(deliveryAddress.phone),
+      address: validateAddress(deliveryAddress.address),
+      city: validateCity(deliveryAddress.city),
+      state: validateState(deliveryAddress.state),
+      pincode: validatePincode(deliveryAddress.pincode)
+    }
+    setErrors(newErrors)
+    setTouched({fullName: true, phone: true, address: true, city: true, state: true, pincode: true})
+    return !Object.values(newErrors).some(error => error)
+  }
 
   const subtotal = total
   const deliveryFee = items.length > 0 && subtotal < 500 ? 40 : 0
@@ -39,8 +97,8 @@ export default function Checkout() {
       return
     }
     
-    if (!deliveryAddress.fullName || !deliveryAddress.phone || !deliveryAddress.address || !deliveryAddress.city || !deliveryAddress.state || !deliveryAddress.pincode) {
-      setError('Please fill in all delivery address fields')
+    if (!validateAllFields()) {
+      setError('Please fix the errors in the form')
       return
     }
 
@@ -174,10 +232,17 @@ export default function Checkout() {
                   <input
                     type="text"
                     value={deliveryAddress.fullName}
-                    onChange={(e) => setDeliveryAddress({...deliveryAddress, fullName: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    onChange={(e) => handleAddressChange('fullName', e.target.value)}
+                    onBlur={() => handleBlur('fullName')}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${touched.fullName && errors.fullName ? 'border-red-500' : 'border-gray-300'}`}
                     placeholder="Enter your full name"
                   />
+                  {touched.fullName && errors.fullName && (
+                    <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                      <FaExclamationCircle className="text-xs" />
+                      {errors.fullName}
+                    </p>
+                  )}
                 </div>
                 
                 <div>
@@ -185,21 +250,35 @@ export default function Checkout() {
                   <input
                     type="tel"
                     value={deliveryAddress.phone}
-                    onChange={(e) => setDeliveryAddress({...deliveryAddress, phone: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    onChange={(e) => handleAddressChange('phone', e.target.value)}
+                    onBlur={() => handleBlur('phone')}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${touched.phone && errors.phone ? 'border-red-500' : 'border-gray-300'}`}
                     placeholder="Enter phone number"
                   />
+                  {touched.phone && errors.phone && (
+                    <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                      <FaExclamationCircle className="text-xs" />
+                      {errors.phone}
+                    </p>
+                  )}
                 </div>
                 
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
                   <textarea
                     value={deliveryAddress.address}
-                    onChange={(e) => setDeliveryAddress({...deliveryAddress, address: e.target.value})}
+                    onChange={(e) => handleAddressChange('address', e.target.value)}
+                    onBlur={() => handleBlur('address')}
                     rows="3"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${touched.address && errors.address ? 'border-red-500' : 'border-gray-300'}`}
                     placeholder="Enter your complete address"
                   />
+                  {touched.address && errors.address && (
+                    <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                      <FaExclamationCircle className="text-xs" />
+                      {errors.address}
+                    </p>
+                  )}
                 </div>
                 
                 <div>
@@ -207,10 +286,17 @@ export default function Checkout() {
                   <input
                     type="text"
                     value={deliveryAddress.city}
-                    onChange={(e) => setDeliveryAddress({...deliveryAddress, city: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    onChange={(e) => handleAddressChange('city', e.target.value)}
+                    onBlur={() => handleBlur('city')}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${touched.city && errors.city ? 'border-red-500' : 'border-gray-300'}`}
                     placeholder="Enter city"
                   />
+                  {touched.city && errors.city && (
+                    <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                      <FaExclamationCircle className="text-xs" />
+                      {errors.city}
+                    </p>
+                  )}
                 </div>
                 
                 <div>
@@ -218,10 +304,17 @@ export default function Checkout() {
                   <input
                     type="text"
                     value={deliveryAddress.state}
-                    onChange={(e) => setDeliveryAddress({...deliveryAddress, state: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    onChange={(e) => handleAddressChange('state', e.target.value)}
+                    onBlur={() => handleBlur('state')}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${touched.state && errors.state ? 'border-red-500' : 'border-gray-300'}`}
                     placeholder="Enter state"
                   />
+                  {touched.state && errors.state && (
+                    <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                      <FaExclamationCircle className="text-xs" />
+                      {errors.state}
+                    </p>
+                  )}
                 </div>
                 
                 <div>
@@ -229,10 +322,17 @@ export default function Checkout() {
                   <input
                     type="text"
                     value={deliveryAddress.pincode}
-                    onChange={(e) => setDeliveryAddress({...deliveryAddress, pincode: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    onChange={(e) => handleAddressChange('pincode', e.target.value)}
+                    onBlur={() => handleBlur('pincode')}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${touched.pincode && errors.pincode ? 'border-red-500' : 'border-gray-300'}`}
                     placeholder="Enter pincode"
                   />
+                  {touched.pincode && errors.pincode && (
+                    <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                      <FaExclamationCircle className="text-xs" />
+                      {errors.pincode}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
