@@ -84,45 +84,47 @@ export default function Profile() {
   }
 
   const validateField = (field, value) => {
-    let error = ''
+    let errorMsg = ''
     // Only validate if there's a value (profile fields are optional)
     if (value) {
+      let result = { valid: true, message: '' }
       switch (field) {
         case 'fullName':
-          error = validateName(value)
+          result = validateName(value)
           break
         case 'phone':
-          error = validatePhone(value)
+          result = validatePhone(value)
           break
         case 'address':
-          error = validateAddress(value)
+          result = validateAddress(value)
           break
         case 'city':
-          error = validateCity(value)
+          result = validateCity(value)
           break
         case 'state':
-          error = validateState(value)
+          result = validateState(value)
           break
         case 'pincode':
-          error = validatePincode(value)
+          result = validatePincode(value)
           break
         default:
           break
       }
+      errorMsg = result.message
     }
-    setErrors(prev => ({...prev, [field]: error}))
-    return error
+    setErrors(prev => ({...prev, [field]: errorMsg}))
+    return errorMsg
   }
 
   const validateAllFields = () => {
     const newErrors = {}
     // Only validate fields that have values
-    if (profile.fullName) newErrors.fullName = validateName(profile.fullName)
-    if (profile.phone) newErrors.phone = validatePhone(profile.phone)
-    if (profile.address) newErrors.address = validateAddress(profile.address)
-    if (profile.city) newErrors.city = validateCity(profile.city)
-    if (profile.state) newErrors.state = validateState(profile.state)
-    if (profile.pincode) newErrors.pincode = validatePincode(profile.pincode)
+    if (profile.fullName) newErrors.fullName = validateName(profile.fullName).message
+    if (profile.phone) newErrors.phone = validatePhone(profile.phone).message
+    if (profile.address) newErrors.address = validateAddress(profile.address).message
+    if (profile.city) newErrors.city = validateCity(profile.city).message
+    if (profile.state) newErrors.state = validateState(profile.state).message
+    if (profile.pincode) newErrors.pincode = validatePincode(profile.pincode).message
     
     setErrors(newErrors)
     return !Object.values(newErrors).some(error => error)

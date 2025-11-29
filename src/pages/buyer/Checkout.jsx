@@ -46,41 +46,41 @@ export default function Checkout() {
   }
 
   const validateField = (field, value) => {
-    let error = ''
+    let result = { valid: true, message: '' }
     switch (field) {
       case 'fullName':
-        error = validateName(value)
+        result = validateName(value)
         break
       case 'phone':
-        error = validatePhone(value)
+        result = validatePhone(value)
         break
       case 'address':
-        error = validateAddress(value)
+        result = validateAddress(value)
         break
       case 'city':
-        error = validateCity(value)
+        result = validateCity(value)
         break
       case 'state':
-        error = validateState(value)
+        result = validateState(value)
         break
       case 'pincode':
-        error = validatePincode(value)
+        result = validatePincode(value)
         break
       default:
         break
     }
-    setErrors(prev => ({...prev, [field]: error}))
-    return error
+    setErrors(prev => ({...prev, [field]: result.message}))
+    return result.message
   }
 
   const validateAllFields = () => {
     const newErrors = {
-      fullName: validateName(deliveryAddress.fullName),
-      phone: validatePhone(deliveryAddress.phone),
-      address: validateAddress(deliveryAddress.address),
-      city: validateCity(deliveryAddress.city),
-      state: validateState(deliveryAddress.state),
-      pincode: validatePincode(deliveryAddress.pincode)
+      fullName: validateName(deliveryAddress.fullName).message,
+      phone: validatePhone(deliveryAddress.phone).message,
+      address: validateAddress(deliveryAddress.address).message,
+      city: validateCity(deliveryAddress.city).message,
+      state: validateState(deliveryAddress.state).message,
+      pincode: validatePincode(deliveryAddress.pincode).message
     }
     setErrors(newErrors)
     setTouched({fullName: true, phone: true, address: true, city: true, state: true, pincode: true})
