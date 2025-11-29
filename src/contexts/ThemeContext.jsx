@@ -14,14 +14,21 @@ const ThemeContext = createContext({
   cycleTheme: () => {},
 })
 
-export function ThemeProvider({ children }) {
-  const [theme, setThemeState] = useState(themes.light)
-
-  useEffect(() => {
+// Get initial theme from localStorage (runs only once)
+function getInitialTheme() {
+  if (typeof window !== 'undefined') {
     const saved = window.localStorage.getItem(THEME_STORAGE_KEY)
-    if (saved && Object.values(themes).includes(saved)) setThemeState(saved)
-  }, [])
+    if (saved && Object.values(themes).includes(saved)) {
+      return saved
+    }
+  }
+  return themes.light
+}
 
+export function ThemeProvider({ children }) {
+  const [theme, setThemeState] = useState(getInitialTheme)
+
+  // Apply theme to document on mount and changes
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
     window.localStorage.setItem(THEME_STORAGE_KEY, theme)
