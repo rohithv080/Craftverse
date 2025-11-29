@@ -10,11 +10,12 @@ import { FaArrowLeft, FaMapMarkerAlt, FaCreditCard, FaLock, FaShieldAlt, FaTruck
 export default function Checkout() {
   const location = useLocation()
   const navigate = useNavigate()
-  const { clearCart } = useCart()
+  const { items: cartItems, clearCart } = useCart()
   const { user } = useAuth()
   const product = location.state?.product
   const cart = location.state?.cart
-  const items = cart || (product ? [{ ...product, qty: 1 }] : [])
+  // Use cart from state, or cart context, or single product
+  const items = cart || (cartItems.length > 0 ? cartItems : (product ? [{ ...product, qty: 1 }] : []))
   const total = items.reduce((s, i) => s + i.price * i.qty, 0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
