@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import useProducts from '../../hooks/useProducts'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import ProductModal from '../../components/ProductModal'
 import { FaFilter, FaStar, FaShoppingCart, FaHeart, FaTruck, FaShieldAlt, FaUsers } from 'react-icons/fa'
 import { useCart } from '../../contexts/CartContext'
@@ -442,14 +442,14 @@ export default function Products() {
                     onClick={(e) => {
                       e.stopPropagation()
                       if (p.quantity > 0) {
-                        addToCart(p, 1)
+                        setActive(p)
                       }
                     }}
                     disabled={!p.quantity || p.quantity === 0}
                     className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-2.5 px-4 rounded-lg font-medium text-sm transition-all duration-200 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
                   >
                     <FaShoppingCart className="text-sm" />
-                    Add to Cart
+                    Buy Now
                   </button>
                   
                 </div>

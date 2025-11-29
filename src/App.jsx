@@ -86,6 +86,8 @@ function App() {
                     <Route path="/help" element={<HelpCenter />} />
                     <Route path="/returns" element={<Returns />} />
                     <Route path="/shipping" element={<Shipping />} />
+                    {/* Public product browsing */}
+                    <Route path="/buyer/products" element={<Products />} />
                     <Route
                       path="/seller/add"
                       element={
@@ -115,14 +117,6 @@ function App() {
                       element={
                         <ProtectedRoute>
                           <ReceivedOrders />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/buyer/products"
-                      element={
-                        <ProtectedRoute>
-                          <Products />
                         </ProtectedRoute>
                       }
                     />

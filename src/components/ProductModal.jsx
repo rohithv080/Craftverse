@@ -1,14 +1,33 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useCart } from '../contexts/CartContext'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function ProductModal({ product, onClose }) {
   const { addToCart } = useCart()
+  const navigate = useNavigate()
   const [qty, setQty] = useState(1)
+  
+  // Handle ESC key to close modal
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+    window.addEventListener('keydown', handleEsc)
+    return () => window.removeEventListener('keydown', handleEsc)
+  }, [onClose])
+  
   if (!product) return null
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-      <div className="rounded-2xl shadow-xl max-w-lg w-full overflow-hidden card">
+    <div 
+      className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
+      onClick={onClose}
+    >
+      <div 
+        className="rounded-2xl shadow-xl max-w-lg w-full overflow-hidden card"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="relative">
           <img src={product.imageUrl} alt={product.name} className="h-56 w-full object-cover" />
           <button onClick={onClose} className="absolute top-3 right-3 rounded-full px-3 py-1" style={{ backgroundColor: 'rgb(var(--card))' }}>✕</button>
@@ -65,13 +84,15 @@ export default function ProductModal({ product, onClose }) {
               Add to Cart
             </button>
             {product.quantity > 0 ? (
-              <Link 
-                to="/buyer/checkout" 
-                state={{ product, qty }} 
+              <button 
+                onClick={() => {
+                  addToCart(product, qty);
+                  navigate('/buyer/cart');
+                }}
                 className="flex-1 text-center btn-primary rounded-md py-2 font-medium"
               >
                 Buy Now
-              </Link>
+              </button>
             ) : (
               <button 
                 disabled 
