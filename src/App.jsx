@@ -6,6 +6,7 @@ import "./index.css";
 import Layout from "./components/Layout.jsx";
 import Login from "./pages/auth/Login.jsx";
 import Signup from "./pages/auth/Signup.jsx";
+import ForgotPassword from "./pages/auth/ForgotPassword.jsx";
 import RoleSelect from "./pages/RoleSelect.jsx";
 import AddProduct from "./pages/seller/AddProduct.jsx";
 import EditProduct from "./pages/seller/EditProduct.jsx";
@@ -75,6 +76,7 @@ function App() {
                   {/* Auth routes - no layout */}
                   <Route path="/auth/login" element={<Login />} />
                   <Route path="/auth/signup" element={<Signup />} />
+                  <Route path="/auth/forgot-password" element={<ForgotPassword />} />
                   {/* Role selection - no layout */}
                   <Route path="/role-select" element={<ProtectedRoute><RoleSelect /></ProtectedRoute>}/>
                   {/* Public routes with layout */}

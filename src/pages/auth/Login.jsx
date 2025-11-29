@@ -117,6 +117,11 @@ export default function Login() {
                   {errors.password}
                 </p>
               )}
+              <div className="mt-1 text-right">
+                <Link to="/auth/forgot-password" className="text-sm text-orange-500 hover:text-orange-600">
+                  Forgot password?
+                </Link>
+              </div>
             </div>
             <button 
               disabled={loading} 
